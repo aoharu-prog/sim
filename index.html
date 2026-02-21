@@ -17,51 +17,106 @@
     --label-color: #5a7a70;
     --slider-track: 10px;
     --thumb-size: 28px;
+    --card-px: 16px;
   }
+  @media (min-width: 600px) {
+    :root { --card-px: 26px; }
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'Roboto', 'ヒラギノ角ゴ Pro', 'Hiragino Kaku Gothic Pro', 'メイリオ', sans-serif;
     min-height: 100vh;
-    padding: 32px 20px 48px;
+    padding: 16px 14px 36px;
     max-width: 900px;
     margin: 0 auto;
   }
-  header { margin-bottom: 28px; }
-  header h1 { font-size: 1.7rem; font-weight: 700; color: var(--green); letter-spacing: 0.02em; margin-bottom: 5px; }
-  header p { font-size: 0.88rem; color: var(--muted); }
+  @media (min-width: 640px) {
+    body { padding: 32px 20px 48px; }
+  }
 
-  .card { background: var(--card); border-radius: 22px; padding: 28px 26px; box-shadow: 0 4px 28px rgba(74,140,111,0.09); margin-bottom: 18px; }
-  .card-label { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mint); margin-bottom: 20px; }
+  /* ===== HEADER ===== */
+  header { margin-bottom: clamp(16px, 4vw, 28px); }
+  header h1 {
+    font-size: clamp(1.2rem, 5vw, 1.7rem);
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 0.02em;
+    margin-bottom: 5px;
+  }
+  header p {
+    font-size: clamp(0.75rem, 2.3vw, 0.88rem);
+    color: var(--muted);
+  }
+
+  /* ===== CARD ===== */
+  .card {
+    background: var(--card);
+    border-radius: clamp(14px, 3vw, 22px);
+    padding: 18px var(--card-px) 20px;
+    box-shadow: 0 4px 28px rgba(74,140,111,0.09);
+    margin-bottom: 12px;
+  }
+  @media (min-width: 600px) {
+    .card { padding: 28px var(--card-px); margin-bottom: 18px; }
+  }
+
+  .card-label {
+    font-size: clamp(0.65rem, 1.9vw, 0.78rem);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mint);
+    margin-bottom: clamp(14px, 3vw, 20px);
+  }
 
   /* ===== INPUT ROWS ===== */
-  .input-rows { display: flex; flex-direction: column; gap: 22px; }
+  .input-rows { display: flex; flex-direction: column; gap: clamp(16px, 3.5vw, 22px); }
 
-  /* All irows use same 2-col layout */
+  /* Mobile-first: 1列 → 560px以上で2列 */
   .irow {
     display: grid;
-    grid-template-columns: 200px 1fr;
-    align-items: center;
-    gap: 16px;
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
-  @media(max-width:560px){
-    .irow { grid-template-columns: 1fr; gap: 8px; }
+  @media (min-width: 560px) {
+    .irow {
+      grid-template-columns: 200px 1fr;
+      align-items: center;
+      gap: 16px;
+    }
   }
 
   .irow-label { display: flex; flex-direction: column; gap: 3px; }
-  .irow-label .lname { font-size: 1.05rem; font-weight: 600; color: var(--text); line-height: 1.3; }
-  .irow-label .ldesc { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+  .irow-label .lname {
+    font-size: clamp(0.88rem, 2.8vw, 1.05rem);
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .irow-label .ldesc {
+    font-size: clamp(0.65rem, 2vw, 0.75rem);
+    color: var(--muted);
+    line-height: 1.4;
+  }
 
   .irow-right { display: flex; flex-direction: column; gap: 8px; }
 
   /* value row */
   .val-row { display: flex; align-items: baseline; gap: 6px; }
   .num-edit {
-    font-size: 2rem; font-weight: 700; color: var(--text);
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    font-weight: 700;
+    color: var(--text);
     font-family: 'Roboto', sans-serif;
-    border: none; border-bottom: 2.5px solid var(--mint); outline: none;
-    background: transparent; width: 110px;
+    border: none;
+    border-bottom: 2.5px solid var(--mint);
+    outline: none;
+    background: transparent;
+    width: 110px;
     -moz-appearance: textfield;
     padding: 0 3px 2px;
     transition: border-color .2s;
@@ -70,44 +125,75 @@
   .num-edit:focus { border-bottom-color: var(--green); }
   .num-edit::-webkit-outer-spin-button,
   .num-edit::-webkit-inner-spin-button { -webkit-appearance: none; }
-  .val-unit { font-size: 1rem; color: var(--muted); font-weight: 500; }
+  .val-unit {
+    font-size: clamp(0.82rem, 2.5vw, 1rem);
+    color: var(--muted);
+    font-weight: 500;
+  }
 
-  /* DOB: 入力欄と同サイズ・太さ。プルダウン自体のフォントは2段階小さく（OSドロップダウン内）*/
+  /* DOB セレクト */
   .dob-row { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
   .dob-row select {
-    /* 表示値は num-edit に合わせて 2rem 700 */
-    font-size: 2rem; font-weight: 700; color: var(--text);
+    font-size: clamp(1.5rem, 6vw, 2rem);
+    font-weight: 700;
+    color: var(--text);
     font-family: 'Roboto', 'ヒラギノ角ゴ Pro', sans-serif;
-    border: none; border-bottom: 2.5px solid var(--mint);
-    background: transparent; outline: none; cursor: pointer;
+    border: none;
+    border-bottom: 2.5px solid var(--mint);
+    background: transparent;
+    outline: none;
+    cursor: pointer;
     padding: 0 4px 2px;
-    -webkit-appearance: none; appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
     transition: border-color .2s;
     line-height: 1.1;
-    /* option内のフォントを2段階下げる（Chrome/Edgeで有効） */
     option { font-size: 0.85rem; font-weight: 400; }
   }
   .dob-row select:focus { border-bottom-color: var(--green); }
-  .dob-unit { font-size: 1rem; color: var(--muted); font-weight: 500; }
-  .age-display { font-size: 0.88rem; color: var(--label-color); font-weight: 500; margin-left: 6px; white-space: nowrap; }
+  .dob-unit {
+    font-size: clamp(0.82rem, 2.5vw, 1rem);
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .age-display {
+    font-size: clamp(0.75rem, 2.3vw, 0.88rem);
+    color: var(--label-color);
+    font-weight: 500;
+    margin-left: 4px;
+    white-space: nowrap;
+  }
+  .age-display.warn { color: #e07a3a; font-weight: 600; margin-left: 0; }
+  .eval-warn {
+    font-size: clamp(0.62rem, 1.8vw, 0.7rem);
+    color: #e07a3a;
+    margin-top: 2px;
+    display: none;
+  }
+  .eval-warn.show { display: block; }
 
-  /* ===== SLIDER ROW — aligned across all rows ===== */
-  /*
-    Layout:  [－btn][range][＋btn]
-    The range-wrap uses flex:1 so all sliders get identical track width.
-    We enforce min-width:0 on range-wrap so flex shrinks properly.
-  */
+  /* ===== SLIDER ===== */
   .slider-row {
-    display: flex; align-items: center; gap: 12px;
-    /* Make slider area fill the full irow-right width */
+    display: flex;
+    align-items: center;
+    gap: 10px;
     width: 100%;
   }
   .pm-btn {
-    width: 34px; height: 34px; border-radius: 50%;
-    background: var(--green); color: #fff;
-    border: none; cursor: pointer; font-size: 1.3rem; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; line-height: 1;
+    width: clamp(30px, 8vw, 34px);
+    height: clamp(30px, 8vw, 34px);
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: clamp(1.1rem, 3.5vw, 1.3rem);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
     box-shadow: 0 2px 8px rgba(74,140,111,0.3);
     transition: background .15s, transform .1s;
     user-select: none;
@@ -115,105 +201,219 @@
   .pm-btn:hover { background: #3a7a5f; }
   .pm-btn:active { transform: scale(0.92); }
 
-  /* range-wrap always takes remaining space equally */
   .range-wrap { flex: 1; min-width: 0; }
 
   input[type="range"] {
-    -webkit-appearance: none; appearance: none;
-    width: 100%; height: var(--slider-track);
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: var(--slider-track);
     background: linear-gradient(
       to right,
       var(--green) 0%, var(--green) var(--pct, 0%),
       var(--muted-light) var(--pct, 0%), var(--muted-light) 100%
     );
-    border-radius: 99px; outline: none; cursor: pointer;
+    border-radius: 99px;
+    outline: none;
+    cursor: pointer;
     display: block;
   }
   input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none; appearance: none;
-    width: var(--thumb-size); height: var(--thumb-size); border-radius: 50%;
-    background: var(--green); border: 3px solid #fff;
+    -webkit-appearance: none;
+    appearance: none;
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    border-radius: 50%;
+    background: var(--green);
+    border: 3px solid #fff;
     box-shadow: 0 2px 10px rgba(74,140,111,0.45);
-    transition: transform .15s; cursor: grab;
+    transition: transform .15s;
+    cursor: grab;
   }
   input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.12); }
   input[type="range"]::-moz-range-thumb {
-    width: var(--thumb-size); height: var(--thumb-size); border-radius: 50%;
-    background: var(--green); border: 3px solid #fff;
-    box-shadow: 0 2px 10px rgba(74,140,111,0.45); cursor: grab;
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    border-radius: 50%;
+    background: var(--green);
+    border: 3px solid #fff;
+    box-shadow: 0 2px 10px rgba(74,140,111,0.45);
+    cursor: grab;
   }
 
   .irow-divider { border: none; border-top: 1.5px solid var(--bg); }
 
   /* ===== OPTIONAL SECTION ===== */
-  /* Extend dashed border to full card width, inner content aligns with outer irows */
   .optional-section {
-    border: 1.5px dashed var(--muted-light);
-    border-radius: 16px;
-    margin-left: -26px;
-    margin-right: -26px;
-    padding: 16px 26px;
-    display: flex; flex-direction: column; gap: 18px;
+    border-top: 1.5px solid var(--muted-light);
+    padding-top: clamp(14px, 3vw, 18px);
+    display: flex;
+    flex-direction: column;
+    gap: clamp(14px, 3vw, 18px);
   }
-  .optional-header { display: flex; align-items: flex-start; gap: 10px; }
+  .optional-header { display: flex; align-items: center; gap: 10px; }
+  /* モバイル：バッジの下に説明文 */
+  @media (max-width: 559px) {
+    .optional-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+  }
   .optional-badge {
-    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.06em;
-    background: var(--mint); color: var(--green);
-    border-radius: 99px; padding: 3px 10px;
-    white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+    font-size: clamp(0.6rem, 1.8vw, 0.68rem);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    background: var(--mint);
+    color: var(--green);
+    border-radius: 99px;
+    padding: 3px 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 1px;
   }
-  .optional-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+  .optional-desc {
+    font-size: clamp(0.7rem, 2.2vw, 0.78rem);
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  /* モバイルは縦並びレイアウトのため改行タグは常に非表示 */
+  .br-sp { display: none; }
 
   /* ===== SUMMARY ===== */
-  .summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 22px; }
-  @media(max-width:460px){ .summary { grid-template-columns: 1fr 1fr; } }
-  .sitem { background: var(--bg); border-radius: 16px; padding: 20px 14px 18px; text-align: center; }
+  /* Mobile: 2列、480px以上: 3列 */
+  .summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: clamp(14px, 3.5vw, 22px);
+  }
+  @media (min-width: 480px) {
+    .summary { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  }
+  /* モバイル2列時：3番目のカードをフルスパン */
+  @media (max-width: 479px) {
+    .sitem:last-child { grid-column: 1 / -1; }
+  }
 
-  /* 項目名: 2回り大きく → 1rem */
-  .sitem .sl { font-size: 1rem; color: var(--label-color); font-weight: 600; margin-bottom: 10px; }
-
-  /* 数字: ウェイト1段階下げ (900→700) */
+  .sitem {
+    background: var(--bg);
+    border-radius: clamp(10px, 2.5vw, 16px);
+    padding: clamp(12px, 3vw, 20px) clamp(8px, 2vw, 14px) clamp(10px, 2.5vw, 18px);
+    text-align: center;
+  }
+  .sitem .sl {
+    font-size: clamp(0.72rem, 2.2vw, 1rem);
+    color: var(--label-color);
+    font-weight: 600;
+    margin-bottom: clamp(6px, 1.8vw, 10px);
+    line-height: 1.4;
+  }
   .sitem .sv { font-family: 'Roboto', sans-serif; line-height: 1.1; }
-  .sv-num { font-size: 2rem; font-weight: 700; color: var(--green); }
-  /* 万円: sv-numよりやや小さく、同ウェイト */
-  .sv-man { font-size: 1.1rem; font-weight: 700; color: var(--green); margin-left: 3px; }
+  .sv-num {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    font-weight: 700;
+    color: var(--green);
+  }
+  .sv-man {
+    font-size: clamp(0.85rem, 2.8vw, 1.1rem);
+    font-weight: 700;
+    color: var(--green);
+    margin-left: 3px;
+  }
+  .sitem .sv-sub {
+    font-size: clamp(0.75rem, 2.3vw, 0.92rem);
+    color: var(--label-color);
+    font-weight: 600;
+    margin-top: 8px;
+  }
 
-  /* 65歳時の資産(◯年後): 一回り大きく */
-  .sitem .sv-sub { font-size: 0.92rem; color: var(--label-color); font-weight: 600; margin-top: 8px; }
-
-  /* 新NISA枠使い切り: 数字部分は sv-num と同サイズ・ウェイト、日本語は sv-man と同サイズ・ウェイト */
-  .nisa-done-num  { font-size: 2rem;  font-weight: 700; color: var(--green); font-family: 'Roboto', sans-serif; }
-  .nisa-done-unit { font-size: 0.95rem; font-weight: 700; color: var(--green); margin-left: 1px; margin-right: 2px; font-family: 'Roboto', 'ヒラギノ角ゴ Pro', sans-serif; vertical-align: middle; }
-  /* detail line(歳・ヶ月): sv-sub と同サイズ */
-  .nisa-done-detail { font-size: 0.92rem; color: var(--label-color); font-weight: 600; margin-top: 8px; }
+  .nisa-done-num {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    font-weight: 700;
+    color: var(--green);
+    font-family: 'Roboto', sans-serif;
+  }
+  .nisa-done-unit {
+    font-size: clamp(0.75rem, 2.5vw, 0.95rem);
+    font-weight: 700;
+    color: var(--green);
+    margin-left: 1px;
+    margin-right: 2px;
+    font-family: 'Roboto', 'ヒラギノ角ゴ Pro', sans-serif;
+    vertical-align: middle;
+  }
+  .nisa-done-detail {
+    font-size: clamp(0.75rem, 2.3vw, 0.92rem);
+    color: var(--label-color);
+    font-weight: 600;
+    margin-top: 8px;
+  }
 
   /* ===== CHART ===== */
-  .legend { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 14px; }
-  .li { display: flex; align-items: center; gap: 7px; font-size: 0.84rem; color: var(--text); }
+  .legend {
+    display: flex;
+    gap: clamp(10px, 3vw, 18px);
+    flex-wrap: wrap;
+    margin-bottom: clamp(8px, 2vw, 14px);
+  }
+  .li {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: clamp(0.72rem, 2.2vw, 0.84rem);
+    color: var(--text);
+  }
   .ld { width: 13px; height: 13px; border-radius: 3px; }
-  .chart-wrap { width: 100%; overflow-x: hidden; }
+  .chart-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   canvas { display: block; cursor: default; }
-  .note { font-size: 0.72rem; color: var(--muted); text-align: right; margin-top: 8px; }
+  .note {
+    font-size: clamp(0.6rem, 1.8vw, 0.72rem);
+    color: var(--muted);
+    text-align: right;
+    margin-top: 8px;
+  }
 
   /* ===== TOOLTIP ===== */
   #tooltip {
-    position: fixed; background: #2c3a35; color: #fff; border-radius: 14px;
-    padding: 13px 16px; font-size: 0.84rem; pointer-events: none; opacity: 0;
-    transition: opacity .15s; z-index: 200; min-width: 225px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.22); line-height: 1.9;
+    position: fixed;
+    background: #2c3a35;
+    color: #fff;
+    border-radius: 14px;
+    padding: 13px 16px;
+    font-size: clamp(0.72rem, 2.2vw, 0.84rem);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 200;
+    min-width: 200px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+    line-height: 1.9;
   }
   #tooltip.show { opacity: 1; }
-  #tooltip .ty { font-size: 0.96rem; font-weight: 700; color: var(--mint); margin-bottom: 3px; }
-  #tooltip .ttotal { font-size: 1.08rem; font-weight: 700; margin-bottom: 2px; }
+  #tooltip .ty {
+    font-size: clamp(0.82rem, 2.5vw, 0.96rem);
+    font-weight: 700;
+    color: var(--mint);
+    margin-bottom: 3px;
+  }
+  #tooltip .ttotal {
+    font-size: clamp(0.88rem, 2.8vw, 1.08rem);
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
   #tooltip .tr { display: flex; align-items: center; gap: 7px; }
   #tooltip .td { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
   #tooltip .tsep { border-top: 1px solid rgba(255,255,255,0.15); margin: 4px 0; }
 
   /* ===== DISCLAIMER ===== */
   .disclaimer {
-    margin-top: 10px; padding: 14px 18px;
-    background: rgba(255,255,255,0.6); border-radius: 14px;
-    font-size: 0.65rem; color: var(--muted); line-height: 1.7;
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 14px;
+    font-size: clamp(0.58rem, 1.8vw, 0.65rem);
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  @media (min-width: 600px) {
+    .disclaimer { padding: 14px 18px; }
   }
   .disclaimer p + p { margin-top: 5px; }
 </style>
@@ -229,7 +429,7 @@
   <div class="card-label">入力条件</div>
   <div class="input-rows">
 
-    <!-- 生年月日 (スライダーなし → slider-row は空でよい) -->
+    <!-- 生年月日 -->
     <div class="irow">
       <div class="irow-label">
         <span class="lname">生年月日</span>
@@ -241,8 +441,6 @@
           <select id="dobMonth"></select><span class="dob-unit">月</span>
           <span class="age-display" id="ageDisplay"></span>
         </div>
-        <!-- 空のスペーサー：他行のスライダーと高さをそろえるため -->
-        <div style="height:34px"></div>
       </div>
     </div>
 
@@ -286,13 +484,11 @@
       </div>
     </div>
 
-    <hr class="irow-divider">
-
     <!-- 任意入力セクション -->
     <div class="optional-section">
       <div class="optional-header">
         <span class="optional-badge">任意入力</span>
-        <span class="optional-desc">すでに新NISAで投資している方のみ入力してください。<br>まだ投資していない方は 0 のままでOKです。</span>
+        <span class="optional-desc">すでに新NISAで投資している方のみ入力してください。<br class="br-sp">まだ投資していない方は 0 のままでOKです。</span>
       </div>
 
       <!-- 新NISA投資累計額 -->
@@ -327,9 +523,10 @@
           </div>
           <div class="slider-row">
             <button class="pm-btn" data-target="slEval" data-step="-10">－</button>
-            <div class="range-wrap"><input type="range" id="slEval" min="0" max="3600" step="1" value="0"></div>
+            <div class="range-wrap"><input type="range" id="slEval" min="0" max="9999" step="1" value="0"></div>
             <button class="pm-btn" data-target="slEval" data-step="10">＋</button>
           </div>
+          <div id="evalWarn" class="eval-warn">⚠ 評価額が投資累計額を下回っています（含み損の状態）</div>
         </div>
       </div>
 
@@ -389,7 +586,9 @@ const currentMonth = now.getMonth() + 1;
 const dobYearSel  = document.getElementById('dobYear');
 const dobMonthSel = document.getElementById('dobMonth');
 
-for (let y = currentYear - 18; y >= 1940; y--) {
+// 65歳未満になれる年の下限（その年生まれでも最低1ヶ月は64歳以下になれる）
+const minBirthYear = currentMonth < 12 ? currentYear - 65 : currentYear - 64;
+for (let y = currentYear - 18; y >= minBirthYear; y--) {
   const o = document.createElement('option');
   o.value = y; o.textContent = y;
   dobYearSel.appendChild(o);
@@ -403,22 +602,43 @@ for (let m = 1; m <= 12; m++) {
 }
 dobMonthSel.value = currentMonth;
 
+// 選択中の年に対して65歳以上になる月をdisabledにする
+function updateMonthOptions() {
+  const y = parseInt(dobYearSel.value);
+  Array.from(dobMonthSel.options).forEach(o => {
+    const m = parseInt(o.value);
+    const ageMonths = (currentYear - y) * 12 + (currentMonth - m);
+    o.disabled = Math.floor(Math.max(0, ageMonths) / 12) >= 65;
+  });
+  // 現在選択中の月が無効になっていたら、最初の有効な月へ移動
+  const curOpt = Array.from(dobMonthSel.options).find(o => parseInt(o.value) === parseInt(dobMonthSel.value));
+  if (curOpt && curOpt.disabled) {
+    const first = Array.from(dobMonthSel.options).find(o => !o.disabled);
+    if (first) dobMonthSel.value = first.value;
+  }
+}
+
 function getAgeFromDOB() {
   const by = parseInt(dobYearSel.value);
   const bm = parseInt(dobMonthSel.value);
   let ageMonths = (currentYear - by) * 12 + (currentMonth - bm);
   if (ageMonths < 0) ageMonths = 0;
-  return { ageYears: clamp(Math.floor(ageMonths / 12), 18, 64), ageMon: ageMonths % 12 };
+  const rawAge = Math.floor(ageMonths / 12);
+  return { ageYears: clamp(rawAge, 18, 64), ageMon: ageMonths % 12, rawAge };
 }
 
 function updateAgeDisplay() {
   const { ageYears, ageMon } = getAgeFromDOB();
-  document.getElementById('ageDisplay').textContent =
-    `（現在 ${ageYears}歳${ageMon > 0 ? ageMon + 'ヶ月' : ''}）`;
+  const el = document.getElementById('ageDisplay');
+  const rc = document.getElementById('resultCard');
+  el.textContent = `（現在 ${ageYears}歳${ageMon > 0 ? ageMon + 'ヶ月' : ''}）`;
+  el.classList.remove('warn');
+  rc.style.display = '';
 }
 
-dobYearSel.addEventListener('change',  () => { updateAgeDisplay(); simulate(); });
+dobYearSel.addEventListener('change',  () => { updateMonthOptions(); updateAgeDisplay(); simulate(); });
 dobMonthSel.addEventListener('change', () => { updateAgeDisplay(); simulate(); });
+updateMonthOptions();
 updateAgeDisplay();
 
 // ---- Slider sync ----
@@ -444,7 +664,7 @@ function linkInputs(numId, slId, slMin, slMax, step) {
 }
 
 linkInputs('inContrib', 'slContrib', 0, 1800, 1);
-linkInputs('inEval',    'slEval',    0, 3600, 1);
+linkInputs('inEval',    'slEval',    0, 9999, 1);
 linkInputs('inMonthly', 'slMonthly', 0,   30, 0.1);
 linkInputs('inRate',    'slRate',    0,   10, 0.1);
 
@@ -462,6 +682,18 @@ document.querySelectorAll('.pm-btn').forEach(btn => {
     simulate();
   });
 });
+
+// ---- Eval warning ----
+function checkEvalWarn() {
+  const contrib = parseFloat(document.getElementById('inContrib').value) || 0;
+  const evalV   = parseFloat(document.getElementById('inEval').value)    || 0;
+  const warn = document.getElementById('evalWarn');
+  if (evalV > 0 && contrib > 0 && evalV < contrib) {
+    warn.classList.add('show');
+  } else {
+    warn.classList.remove('show');
+  }
+}
 
 // ---- Simulate ----
 function simulate() {
@@ -508,6 +740,7 @@ function simulate() {
     }
   }
 
+  checkEvalWarn();
   bars = data;
   hoveredIdx = -1;
   renderSummary(data, ageInMonths, monthsLeft, contrib, monthly);
@@ -528,7 +761,6 @@ function renderSummary(data, ageInMonths, monthsLeft, contrib, monthly) {
   let nisaCell;
   if (nisaFullInfo) {
     const { simYear, simMonth, age: fAge, ageMon: fAgeM } = nisaFullInfo;
-    // 数字部分: nisa-done-num (2rem 700), 日本語: nisa-done-unit (1.1rem 700)
     nisaCell = `
       <div>
         <span class="nisa-done-num">${simYear}</span><span class="nisa-done-unit">年</span><span class="nisa-done-num">${simMonth}</span><span class="nisa-done-unit">ヶ月目</span>
@@ -575,17 +807,37 @@ function rRect(ctx, x, y, w, h, r) {
 }
 
 function renderChart(data) {
+  const isMobile   = window.innerWidth < 560;
+  const MOBILE_MAX = 25; // これを超えたらスクロール
   const hiIdx  = hoveredIdx;
   const canvas = document.getElementById('chart');
   const dpr    = window.devicePixelRatio || 1;
-  const cW     = canvas.parentElement.clientWidth;
+  const containerW = canvas.parentElement.clientWidth;
   const n      = data.length;
-  const BAR    = Math.max(4, (cW - 70) / n - Math.max(1, Math.min(4, (cW - 70) / n * 0.28)));
-  const GAP    = Math.max(1, (cW - 70) / n - BAR);
-  const W      = cW;
-  const H      = 300;
-  const PAD    = { t:18, r:14, b:42, l:64 };
-  const pH     = H - PAD.t - PAD.b;
+
+  /* モバイル時：左ラベルなし → PAD.l を最小に */
+  const PAD = {
+    t: 14,
+    r: isMobile ? 6 : 14,
+    b: isMobile ? 34 : 42,
+    l: isMobile ? 6 : 64,
+  };
+
+  /* モバイルで25本超の場合、25本分の密度を保ちながらcanvasを拡幅 */
+  let cW;
+  if (isMobile && n > MOBILE_MAX) {
+    const slotW = (containerW - PAD.l - PAD.r) / MOBILE_MAX;
+    cW = Math.ceil(PAD.l + PAD.r + slotW * n);
+  } else {
+    cW = containerW;
+  }
+
+  const plotW = cW - PAD.l - PAD.r;
+  const BAR   = Math.max(3, plotW / n - Math.max(1, Math.min(4, plotW / n * 0.28)));
+  const GAP   = Math.max(1, plotW / n - BAR);
+  const W     = cW;
+  const H     = isMobile ? 220 : 300;
+  const pH    = H - PAD.t - PAD.b;
 
   canvas.width  = W * dpr; canvas.height = H * dpr;
   canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
@@ -596,20 +848,26 @@ function renderChart(data) {
 
   const maxVal = Math.max(...data.map(d => d.total), 1);
 
+  /* グリッド線 ＋ Y軸ラベル（デスクトップのみ） */
   for (let i = 0; i <= 4; i++) {
     const y = PAD.t + pH - pH * i / 4;
     ctx.strokeStyle = '#deeee8'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(W - PAD.r, y); ctx.stroke();
-    ctx.fillStyle = '#7a9a90';
-    ctx.font = '500 10px Roboto, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(fmtAxisMan(maxVal * i / 4), PAD.l - 6, y + 3.5);
+    if (!isMobile) {
+      ctx.fillStyle = '#7a9a90';
+      ctx.font = '500 10px Roboto, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(fmtAxisMan(maxVal * i / 4), PAD.l - 6, y + 3.5);
+    }
   }
+
+  /* X軸ラベルのステップ：モバイルは10年ごと */
+  const labelStep = isMobile ? 10 : 5;
 
   bars = data.map((d, i) => {
     const x        = PAD.l + i * (BAR + GAP);
     const baseY    = PAD.t + pH;
-    const totalH   = (d.total    / maxVal) * pH;
+    const totalH   = (d.total     / maxVal) * pH;
     const principH = (d.principal / maxVal) * pH;
     const gainH    = totalH - principH;
     const isHov    = i === hiIdx;
@@ -629,11 +887,11 @@ function renderChart(data) {
       rRect(ctx, x, baseY - totalH, BAR, gainH, [4, 4, 0, 0]);
     }
 
-    if (d.year === 1 || d.year % 5 === 0) {
+    if (d.year === 1 || d.year % labelStep === 0) {
       ctx.fillStyle = '#7a9a90';
-      ctx.font = '500 9.5px Roboto, sans-serif';
+      ctx.font = isMobile ? '500 8.5px Roboto, sans-serif' : '500 9.5px Roboto, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(d.age + '歳', x + BAR / 2, H - PAD.b + 15);
+      ctx.fillText(d.age + '歳', x + BAR / 2, H - PAD.b + 13);
       ctx.strokeStyle = '#ccd6d1'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(x + BAR/2, baseY); ctx.lineTo(x + BAR/2, baseY + 4); ctx.stroke();
     }
@@ -675,9 +933,10 @@ function onPointer(e) {
     <div class="tr"><div class="td" style="background:#ccd6d1"></div>新NISA残枠：${fmtYen(d.nisaLeft)}</div>
   `;
 
-  const TW = 235, TH = 182;
+  const TW = 220, TH = 182;
   let tx = cx + 16, ty = cy - 20;
   if (tx + TW > window.innerWidth)  tx = cx - TW - 16;
+  if (tx < 4) tx = 4;
   if (ty + TH > window.innerHeight) ty = cy - TH - 10;
   if (ty < 4) ty = 4;
   tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
