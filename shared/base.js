@@ -115,6 +115,9 @@ function updateSliderBg(sl) {
   );
   sl.style.setProperty('--pct', pct + '%');
 
+  const rangeWrap = sl.closest('.ds-range-wrap');
+  if (rangeWrap) rangeWrap.style.setProperty('--pct', pct + '%');
+
   const shimmer = document.getElementById(sl.id + '-shimmer');
   if (shimmer) shimmer.style.width = pct + '%';
 

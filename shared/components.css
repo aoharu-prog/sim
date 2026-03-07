@@ -225,8 +225,45 @@ html { scroll-behavior: smooth; }
 
 /* ══════════════════════════════════════════
    ds-range
-   シンプルスライダー（ds-stepper-wrap--no-pill と同じ thumb / fill）
+   シンプルスライダー（ds-progress と同じ fill＋シマーアニメーション）
 ══════════════════════════════════════════ */
+.ds-range-wrap {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--mint-light);
+  overflow: visible;
+}
+.ds-range-wrap .ds-range {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+}
+.ds-range-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: var(--pct, 0%);
+  background: linear-gradient(90deg, var(--accent), var(--accent-deep));
+  border-radius: 3px;
+  overflow: hidden;
+  /* transition なし：thumb と fill を完全同期させるため */
+  pointer-events: none;
+}
+.ds-range-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: barShimmer 2s ease-in-out infinite;
+}
 .ds-range {
   -webkit-appearance: none;
   appearance: none;
@@ -236,10 +273,13 @@ html { scroll-behavior: smooth; }
   outline: none;
   cursor: pointer;
   display: block;
+  position: relative;
+  z-index: 1;
+  /* 単体使用時のフォールバック（wrap 内では transparent で上書き） */
   background: linear-gradient(
     to right,
     var(--accent) 0%,
-    var(--accent) var(--pct, 0%),
+    var(--accent-deep) var(--pct, 0%),
     var(--mint-light) var(--pct, 0%),
     var(--mint-light) 100%
   );
