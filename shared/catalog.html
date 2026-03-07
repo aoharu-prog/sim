@@ -188,7 +188,7 @@ body {
   <div class="cat-nav-group">base.js</div>
   <a class="cat-nav-link" href="#fmt">数値フォーマット</a>
   <a class="cat-nav-link" href="#animate">animateNum</a>
-  <a class="cat-nav-link" href="#slider-fn">スライダー連動</a>
+  <a class="cat-nav-link" href="#stepper">スライダー連動</a>
   <a class="cat-nav-link" href="#toast-demo">showToast</a>
   <a class="cat-nav-link" href="#confetti-demo">fireConfetti</a>
 </nav>
@@ -479,7 +479,7 @@ body {
           </div>
           <div class="ds-form-row-right">
             <div class="ds-val-row" style="margin-bottom:0;">
-              <span style="font-size:1.8rem;font-family:'Roboto',sans-serif;font-weight:300;color:var(--text-main);">5</span>
+              <span style="font-size:1.8rem;font-family:'Roboto',sans-serif;font-weight:500;color:var(--text-main);">5</span>
               <span class="ds-val-unit">万円</span>
             </div>
           </div>
@@ -491,7 +491,7 @@ body {
           </div>
           <div class="ds-form-row-right">
             <div class="ds-val-row" style="margin-bottom:0;">
-              <span style="font-size:1.8rem;font-family:'Roboto',sans-serif;font-weight:300;color:var(--text-main);">5.0</span>
+              <span style="font-size:1.8rem;font-family:'Roboto',sans-serif;font-weight:500;color:var(--text-main);">5.0</span>
               <span class="ds-val-unit">%</span>
             </div>
           </div>
@@ -522,10 +522,10 @@ body {
   ══════════════════════ -->
   <section class="cat-section" id="stepper">
     <div class="cat-section-header">
-      <h2 class="cat-section-title">ds-input-stepper</h2>
-      <span class="cat-section-tag">.ds-pm-btn / .ds-stepper-range</span>
+      <h2 class="cat-section-title">ds-input-stepper / スライダー連動</h2>
+      <span class="cat-section-tag">.ds-pm-btn / .ds-stepper-range / base.js</span>
     </div>
-    <p class="cat-desc">数値入力 + スライダー + ±ボタンのセット。<code>updateSliderBg()</code> でトラック塗りとシマーオーバーレイを同期。<code>.ds-stepper-wrap--no-pill</code> でピル無し版に切り替え。</p>
+    <p class="cat-desc">数値入力 + スライダー + ±ボタンのセット。<code>updateSliderBg(sl)</code> でトラック塗りとシマーオーバーレイを同期。<code>linkInputs(numId, slId, min, max, step, onChange?)</code> で number input とスライダーを双方向同期。<code>.ds-stepper-wrap--no-pill</code> でピル無し版に切り替え。</p>
     <div class="preview col" style="gap:12px;">
       <div style="font-size:11px;color:var(--sub-text);">ピル有り（フローティングピル）</div>
       <div class="ds-val-row">
@@ -560,6 +560,9 @@ body {
         </div>
         <button class="ds-pm-btn" id="stepperPlusNoPill">＋</button>
       </div>
+      <hr class="ds-divider" style="margin:8px 0;">
+      <div style="font-size:11px;color:var(--sub-text);">ds-range（シンプルスライダー）</div>
+      <input class="ds-range" id="simpleRange" type="range" min="0" max="100" value="40" style="max-width:400px;">
     </div>
   </section>
 
@@ -911,56 +914,6 @@ body {
   </section>
 
 
-  <!-- スライダー連動 -->
-  <section class="cat-section" id="slider-fn">
-    <div class="cat-section-header">
-      <h2 class="cat-section-title">スライダー連動</h2>
-      <span class="cat-section-tag">updateSliderBg / linkInputs</span>
-    </div>
-    <p class="cat-desc"><code>updateSliderBg(sl)</code> でスライダーのトラック塗りを更新。<code>linkInputs(numId, slId, min, max, step, onChange?)</code> で number input とスライダーを双方向同期。ピル有り・ピル無し両方のデモ。</p>
-    <div class="preview col" style="gap:18px;">
-      <div style="font-size:11px;color:var(--sub-text);">ピル有り — linkInputs デモ</div>
-      <div style="display:flex;align-items:baseline;gap:8px;">
-        <input class="ds-num-edit" id="linkNum" type="number" min="0" max="30" step="1" value="10" style="width:80px;">
-        <span class="ds-val-unit">万円</span>
-      </div>
-      <div class="ds-input-stepper">
-        <button class="ds-pm-btn" id="linkMinus">－</button>
-        <div class="ds-stepper-wrap">
-          <div class="ds-stepper-wrap-inner">
-            <div class="ds-stepper-pill" id="linkSl-pill">
-              <div class="ds-stepper-pill-label" id="linkSl-pill-label">10万円</div>
-              <div class="ds-stepper-pill-line"></div>
-            </div>
-            <div class="ds-stepper-shimmer" id="linkSl-shimmer"></div>
-            <input class="ds-stepper-range" id="linkSl" type="range" min="0" max="30" step="1" value="10" data-unit="万円">
-          </div>
-        </div>
-        <button class="ds-pm-btn" id="linkPlus">＋</button>
-      </div>
-      <hr class="ds-divider" style="margin:4px 0;">
-      <div style="font-size:11px;color:var(--sub-text);">ピル無し — linkInputs デモ</div>
-      <div style="display:flex;align-items:baseline;gap:8px;">
-        <input class="ds-num-edit" id="linkNumNoPill" type="number" min="0" max="30" step="1" value="10" style="width:80px;">
-        <span class="ds-val-unit">万円</span>
-      </div>
-      <div class="ds-input-stepper">
-        <button class="ds-pm-btn" id="linkMinusNoPill">－</button>
-        <div class="ds-stepper-wrap ds-stepper-wrap--no-pill">
-          <div class="ds-stepper-shimmer" id="linkSlNoPill-shimmer"></div>
-          <input class="ds-stepper-range" id="linkSlNoPill" type="range" min="0" max="30" step="1" value="10">
-        </div>
-        <button class="ds-pm-btn" id="linkPlusNoPill">＋</button>
-      </div>
-
-      <hr class="ds-divider" style="margin:4px 0;">
-
-      <div style="font-size:11px;color:var(--sub-text);">ds-range（シンプルスライダー）</div>
-      <input class="ds-range" id="simpleRange" type="range" min="0" max="100" value="40" style="max-width:400px;">
-    </div>
-  </section>
-
-
   <!-- showToast -->
   <section class="cat-section" id="toast-demo">
     <div class="cat-section-header">
@@ -1049,33 +1002,12 @@ document.getElementById('stepperPlusNoPill').addEventListener('click', () => {
   updateSliderBg(sl);
 });
 
-// ── linkInputs デモ（ピル有り・ピル無し） ──
-linkInputs('linkNum', 'linkSl', 0, 30, 1);
-document.getElementById('linkMinus').addEventListener('click', () => {
-  const sl = document.getElementById('linkSl');
-  sl.value = clamp(+sl.value - 1, 0, 30);
-  document.getElementById('linkNum').value = sl.value;
-  updateSliderBg(sl);
-});
-document.getElementById('linkPlus').addEventListener('click', () => {
-  const sl = document.getElementById('linkSl');
-  sl.value = clamp(+sl.value + 1, 0, 30);
-  document.getElementById('linkNum').value = sl.value;
-  updateSliderBg(sl);
-});
-linkInputs('linkNumNoPill', 'linkSlNoPill', 0, 30, 1);
-document.getElementById('linkMinusNoPill').addEventListener('click', () => {
-  const sl = document.getElementById('linkSlNoPill');
-  sl.value = clamp(+sl.value - 1, 0, 30);
-  document.getElementById('linkNumNoPill').value = sl.value;
-  updateSliderBg(sl);
-});
-document.getElementById('linkPlusNoPill').addEventListener('click', () => {
-  const sl = document.getElementById('linkSlNoPill');
-  sl.value = clamp(+sl.value + 1, 0, 30);
-  document.getElementById('linkNumNoPill').value = sl.value;
-  updateSliderBg(sl);
-});
+// ── ds-range デモ（--pct で fill 表示） ──
+const simpleRange = document.getElementById('simpleRange');
+if (simpleRange) {
+  updateSliderBg(simpleRange);
+  simpleRange.addEventListener('input', () => updateSliderBg(simpleRange));
+}
 
 // ── チップスクロール初期化 ──
 initChipScroll();

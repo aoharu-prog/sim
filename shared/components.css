@@ -63,12 +63,12 @@ html { scroll-behavior: smooth; }
 .ds-input-wrap { position: relative; }
 .ds-input {
   width: 100%; padding: 16px 56px 16px 20px;
-  font-size: 20px; font-family: 'Roboto', sans-serif; font-weight: 300;
+  font-size: 20px; font-family: 'Roboto', sans-serif; font-weight: 500;
   color: var(--text-main); border: 2px solid var(--mint-light);
   border-radius: 16px; outline: none; background: var(--mint-pale);
   transition: all 0.3s ease; letter-spacing: 0.04em;
 }
-.ds-input::placeholder { color: var(--placeholder); font-weight: 300; font-size: 16px; }
+.ds-input::placeholder { color: var(--placeholder); font-weight: 500; font-size: 16px; }
 .ds-input:focus { border-color: var(--accent); background: var(--card-bg); box-shadow: 0 0 0 4px rgba(168,213,186,0.25); }
 .ds-input-unit {
   position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
@@ -142,7 +142,7 @@ html { scroll-behavior: smooth; }
 }
 .ds-result-label { font-size: 11px; color: var(--sub-text); margin-bottom: 5px; letter-spacing: 0.08em; }
 .ds-result-value {
-  font-family: 'Roboto', sans-serif; font-size: 26px; font-weight: 300;
+  font-family: 'Roboto', sans-serif; font-size: 26px; font-weight: 500;
   color: var(--text-main); display: flex; align-items: baseline; gap: 4px;
 }
 .ds-result-unit { font-family: 'Hiragino Kaku Gothic ProN', sans-serif; font-size: 13px; color: var(--sub-text); font-weight: 400; }
@@ -225,19 +225,46 @@ html { scroll-behavior: smooth; }
 
 /* ══════════════════════════════════════════
    ds-range
-   シンプルスライダー
+   シンプルスライダー（ds-stepper-wrap--no-pill と同じ thumb / fill）
 ══════════════════════════════════════════ */
 .ds-range {
-  -webkit-appearance: none; appearance: none; width: 100%; height: 6px;
-  border-radius: 3px; background: var(--mint-light); outline: none; cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  display: block;
+  background: linear-gradient(
+    to right,
+    var(--accent) 0%,
+    var(--accent) var(--pct, 0%),
+    var(--mint-light) var(--pct, 0%),
+    var(--mint-light) 100%
+  );
 }
 .ds-range::-webkit-slider-thumb {
-  -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-  cursor: pointer; box-shadow: 0 2px 8px rgba(74,140,111,0.4);
-  border: 2px solid #fff; transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2.5px solid var(--accent-deep);
+  box-shadow: 0 1px 6px rgba(74, 140, 111, 0.18);
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  cursor: grab;
 }
-.ds-range::-webkit-slider-thumb:hover { transform: scale(1.3); }
+.ds-range::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.ds-range::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2.5px solid var(--accent-deep);
+  box-shadow: 0 1px 6px rgba(74, 140, 111, 0.18);
+  cursor: grab;
+}
 
 /* ══════════════════════════════════════════
    note-box / dashed-box
@@ -260,7 +287,7 @@ html { scroll-behavior: smooth; }
 ══════════════════════════════════════════ */
 .ds-val-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
 .ds-num-edit {
-  font-size: clamp(1.5rem, 5.5vw, 2rem); font-weight: 300;
+  font-size: clamp(1.5rem, 5.5vw, 2rem); font-weight: 500;
   color: var(--text-main); font-family: 'Roboto', sans-serif;
   border: none; border-bottom: 2px solid var(--mint-light); outline: none;
   background: transparent; width: 100px; -moz-appearance: textfield;
@@ -296,10 +323,11 @@ html { scroll-behavior: smooth; }
   flex: 1; min-width: 0;
   position: relative;
 }
-/* ピルの高さ分の余白 */
+/* ピルの高さ分の余白。padding-bottom でスライダーバーと±ボタンの上下中央揃え */
 .ds-stepper-wrap-inner {
   position: relative;
   padding-top: 38px;
+  padding-bottom: 38px;
 }
 /* B1フローティングピル */
 .ds-stepper-pill {
@@ -421,7 +449,7 @@ html { scroll-behavior: smooth; }
 ══════════════════════════════════════════ */
 .ds-select-row { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
 .ds-select-underline {
-  font-size: clamp(1.4rem, 5vw, 1.8rem); font-weight: 300;
+  font-size: clamp(1.4rem, 5vw, 1.8rem); font-weight: 500;
   color: var(--text-main);
   font-family: 'Roboto', 'Hiragino Kaku Gothic ProN', sans-serif;
   border: none; border-bottom: 2px solid var(--mint-light);
@@ -884,7 +912,7 @@ html { scroll-behavior: smooth; }
 .drs-amount-value {
   font-family: 'Roboto', sans-serif;
   font-size: clamp(1.25rem, 4vw, 1.5rem);
-  font-weight: 300;
+  font-weight: 500;
   color: var(--text-main);
   line-height: 1.1;
 }
