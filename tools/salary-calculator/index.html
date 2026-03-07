@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>給与・手取り計算シミュレーター</title>
 <link rel="stylesheet" href="../../shared/components.css">
-<script src="../../shared/base.js"></script>
-<script src="../../shared/header.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 /* ══════════════════════════════════════════
@@ -28,24 +26,6 @@ body {
   margin: 0 auto;
 }
 @media (min-width: 640px) { body { padding: 36px 24px 60px; } }
-
-/* ── ヘッダー ── */
-header {
-  margin-bottom: clamp(20px, 4vw, 32px);
-  display: flex; flex-direction: column; align-items: center; text-align: center;
-}
-.header-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--mint-pale); border: 1px solid var(--mint-light);
-  color: var(--accent-deep); font-size: 11px; font-family: 'Roboto Mono', monospace;
-  padding: 3px 12px; border-radius: 20px; margin-bottom: 12px;
-  font-weight: 500; letter-spacing: 0.08em;
-}
-header h1 {
-  font-size: clamp(1.3rem, 5vw, 1.9rem); font-weight: 700;
-  color: var(--text-main); letter-spacing: 0.04em; margin-bottom: 6px;
-}
-header p { font-size: clamp(0.75rem, 2.3vw, 0.88rem); color: var(--sub-text); line-height: 1.7; }
 
 /* ── カード共通 ── */
 .ds-card { padding: 24px var(--card-px) 28px; margin-bottom: 16px; }
@@ -254,12 +234,8 @@ header p { font-size: clamp(0.75rem, 2.3vw, 0.88rem); color: var(--sub-text); li
 </head>
 <body>
 
-<div id="site-header" data-top="../../index.html"></div>
-<header>
-  <div class="header-badge">💼 給与シミュレーター</div>
-  <h1>給与・手取り計算シミュレーター</h1>
-  <p>社会保険料・所得税・住民税を考慮した実質手取りを試算します</p>
-</header>
+<h1>給与・手取り計算シミュレーター</h1>
+<p>社会保険料・所得税・住民税を考慮した実質手取りを試算します</p>
 
 <div class="page-cols">
 
@@ -553,6 +529,7 @@ header p { font-size: clamp(0.75rem, 2.3vw, 0.88rem); color: var(--sub-text); li
   <a href="../../index.html">← マネーツールへ戻る</a>
 </div>
 
+<script src="../../shared/base.js"></script>
 <script>
 /* ══════════════════════════════════════════
    給与・手取りシミュレーター

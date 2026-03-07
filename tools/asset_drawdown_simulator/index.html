@@ -7,8 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../shared/header.css">
-  <script src="../../shared/header.js"></script>
+  <link rel="stylesheet" href="../../shared/tokens.css">
+  <link rel="stylesheet" href="../../shared/components.css">
   <style>
     :root{
       --bg:#0b0f14;
@@ -36,23 +36,6 @@
                   radial-gradient(900px 500px at 30% 90%, rgba(255,204,102,.10), transparent 55%),
                   var(--bg);
       color:var(--text);
-    }
-    header{
-      padding:28px 18px 12px;
-      max-width:1120px;
-      margin:0 auto;
-    }
-    h1{
-      margin:0;
-      font-weight:800;
-      letter-spacing:.02em;
-      font-size: clamp(20px, 2.2vw, 30px);
-    }
-    .sub{
-      margin-top:8px;
-      color:var(--muted);
-      line-height:1.6;
-      font-size: 14px;
     }
     .wrap{
       max-width:1120px;
@@ -273,14 +256,8 @@
   </style>
 </head>
 <body>
-<div id="site-header" data-top="../../index.html"></div>
-<header>
-  <h1>資産形成の取り崩しシミュレーション</h1>
-  <div class="sub">
-    つみたて → 運用 → 取り崩しを <span class="pill">年次</span> で試算します。<br>
-    「実質（インフレ調整）」と「名目（額面）」の両方を出します。計算は単純化したモデルです（税金・口座区分・相場変動の年内ブレは未考慮）。
-  </div>
-</header>
+<h1>資産形成の取り崩しシミュレーション</h1>
+<p>つみたて → 運用 → 取り崩しを <span class="pill">年次</span> で試算します。「実質（インフレ調整）」と「名目（額面）」の両方を出します。計算は単純化したモデルです（税金・口座区分・相場変動の年内ブレは未考慮）。</p>
 
 <main class="wrap">
   <section class="card" aria-label="入力">
@@ -478,6 +455,7 @@
   <a href="../../index.html">← マネーツールへ戻る</a>
 </div>
 
+<script src="../../shared/base.js"></script>
 <script>
   // ------------------------------
   // Utils

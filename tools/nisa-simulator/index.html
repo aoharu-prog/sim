@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>新NISA積立シミュレーター</title>
 <link rel="stylesheet" href="../../shared/components.css">
-<script src="../../shared/base.js"></script>
-<script src="../../shared/header.js"></script>
 <style>
 /* ══════════════════════════════════════════
    NISA固有トークン（共通変数は shared/tokens.css）
@@ -35,38 +33,6 @@ body {
   body { padding: 36px 24px 60px; }
 }
 
-
-/* ══════════════════════════════════════════
-   HEADER
-══════════════════════════════════════════ */
-header {
-  margin-bottom: clamp(20px, 4vw, 32px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-.header-badge {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--mint-pale); border: 1px solid var(--mint-light);
-  color: var(--accent-deep); font-size: 11px; font-family: 'Roboto Mono', monospace;
-  padding: 3px 12px; border-radius: 20px; margin-bottom: 12px; font-weight: 500;
-  letter-spacing: 0.08em;
-}
-header h1 {
-  font-size: clamp(1.3rem, 5vw, 1.9rem);
-  font-weight: 700;
-  color: var(--text-main);
-  letter-spacing: 0.04em;
-  margin-bottom: 6px;
-  position: relative;
-  display: inline-block;
-}
-header p {
-  font-size: clamp(0.75rem, 2.3vw, 0.88rem);
-  color: var(--sub-text);
-  line-height: 1.7;
-}
 
 /* ══════════════════════════════════════════
    ds-card — NISA固有オーバーライド
@@ -235,10 +201,8 @@ canvas { display: block; cursor: default; }
 /* ── ds-divider NISA固有オーバーライド ── */
 .ds-divider { margin: 16px 0; }
 .note-br { display: none; }
-.header-br { display: none; }
 @media (max-width: 559px) {
   .note-br { display: block; }
-  .header-br { display: block; }
 }
 
 /* ── tooltip — NISA固有オーバーライド（共通スタイルは shared/components.css .ds-chart-tooltip）── */
@@ -304,12 +268,8 @@ canvas { display: block; cursor: default; }
 </head>
 <body>
 
-<div id="site-header" data-top="../../index.html"></div>
-<header>
-  <div class="header-badge">🌿 新NISA積立シミュレーターv2</div>
-  <h1>新NISA 満額積立シミュレーター</h1>
-  <p>新NISA総枠 1,800万円を考慮した<br class="header-br">長期運用シミュレーション</p>
-</header>
+<h1>新NISA 満額積立シミュレーター</h1>
+<p>新NISA総枠 1,800万円を考慮した長期運用シミュレーション</p>
 
 <div class="page-cols">
 <div class="input-col">
@@ -481,6 +441,7 @@ canvas { display: block; cursor: default; }
 
 <div id="tooltip" class="ds-chart-tooltip"></div>
 
+<script src="../../shared/base.js"></script>
 <script>
 const NISA_MAX = 18_000_000;
 let bars = [];

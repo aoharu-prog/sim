@@ -246,3 +246,26 @@ function fireConfetti(count = 60) {
     setTimeout(() => c.remove(), 3000);
   }
 }
+
+/* ══════════════════════════════════════════
+   サイト共通ヘッダー
+   ページ読み込み時に body 先頭に prepend
+══════════════════════════════════════════ */
+
+function initSiteHeader() {
+  const depth = location.pathname.split('/').filter(Boolean).length - 1;
+  const prefix = depth > 0 ? '../'.repeat(depth) : './';
+  const href = prefix + 'index.html';
+
+  const header = document.createElement('header');
+  header.id = 'site-header';
+  header.innerHTML = '<a href="' + href + '" class="site-header-logo">Money Tools</a>';
+  document.body.insertBefore(header, document.body.firstChild);
+  document.body.classList.add('has-site-header');
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initSiteHeader);
+} else {
+  initSiteHeader();
+}
