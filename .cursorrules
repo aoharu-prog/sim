@@ -1,0 +1,201 @@
+## プロジェクト概要
+個人利用の金融シミュレーターツール集。
+すべてのツールは MONEY/ 配下のフォルダに配置する。
+
+## フォルダ構成ルール
+- 共通ファイルは shared/ に置く
+- 各ツールは tools/ 配下の専用フォルダを作り index.html を配置する
+- 例: tools/nisa-simulator/index.html, tools/ideco-simulator/index.html
+
+## 新規ツール作成時のルール
+- ../../shared/tokens.css と ../../shared/components.css を <link> で参照する
+- ../../shared/base.js を <script> で参照する
+- Google Fontsの <link> タグは書かない（components.cssに含まれているため）
+- デザイントークンの変数（--color-* 等）を積極的に使う
+- そのツール固有のスタイルのみ <style> タグに書く
+
+## デザインシステムの更新ルール
+- shared/components.css を変更・追加するときは
+  shared/catalog.html も必ず同時に更新する
+- 新しいコンポーネント追加 → catalog.html にデモを追加
+- 既存コンポーネント変更 → catalog.html の該当デモも修正
+- コンポーネント削除 → catalog.html の該当デモも削除
+
+## CSSクラス命名ルール
+- 共通コンポーネントは ds- プレフィックスをつける
+- ツール固有のクラスには ds- をつけない
+
+## 変更時の注意
+- 複数ファイルを変更するときは、変更前に影響範囲を提示してからGOをもらう
+- 見た目が変わる可能性がある変更は事前に警告する
+
+## UIカタログ スナップショットルール
+
+### スナップショットを作成するタイミング
+UIコンポーネント（components.css / tokens.css / catalog.html）を修正したとき、
+以下の基準でスナップショットを作成するか判断すること。
+
+【作成する】
+- コンポーネントの見た目が変わる修正（色・サイズ・レイアウト・アニメーションなど）
+- 新しいコンポーネントの追加
+- 既存コンポーネントの削除
+
+【作成しない】
+- コメントの追加・修正のみ
+- CSS変数名のリネームのみ（見た目に影響しない）
+- catalog.htmlのテキスト説明文の修正のみ
+- インデントや空白の整形のみ
+
+
+---
+
+### スナップショットの作成手順
+
+作成すると判断した場合、以下の手順で実行すること。
+
+**① ファイル名の決定**
+形式: `catalog-YYYY-MM-DD-{変更内容}.html`
+- 日付: 今日の日付（例: 2026-03-07）
+- 変更内容: 英数字・ハイフンのみ、20文字以内で変更を端的に表現
+  例: `button-color-update`, `add-slider`, `card-layout-fix` ,` typography-update` ,`slider-update`
+
+**② インライン化して保存**
+以下のファイルを読み込み、すべてを1つのHTMLファイルに統合する：
+- `shared/tokens.css` → `<style>` タグに埋め込む
+- `shared/components.css` → `<style>` タグに埋め込む
+- `shared/base.js` → `<script>` タグに埋め込む
+- `shared/catalog.html` → ベースとなるHTML
+
+統合後のHTMLの構造：
+\```html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <!-- snapshot: YYYY-MM-DD {変更内容の説明} -->
+  <style>
+    /* === tokens.css === */
+    (tokens.cssの内容をそのまま貼る)
+
+    /* === components.css === */
+    (components.cssの内容をそのまま貼る)
+  </style>
+</head>
+<body>
+  (catalog.htmlのbody内容をそのまま貼る)
+  <script>
+    /* === base.js === */
+    (base.jsの内容をそのまま貼る)
+  </script>
+</body>
+</html>
+\```
+
+**③ 保存先**
+`shared/catalog-history/catalog-YYYY-MM-DD-{変更内容}.html`
+
+---
+
+### 作業完了時の報告フォーマット
+
+UIを修正したら、以下の形式で報告すること：
+
+スナップショット作成: あり / なし
+理由: （なしの場合、スキップした理由を記載）
+ファイル名: catalog-YYYY-MM-DD-{変更内容}.html（作成した場合のみ）
+変更概要: （何をどう変えたか1〜2行で）
+
+## ツールUI スナップショットルール
+
+### 対象
+`tools/` フォルダ内の各ツール（例: nisa-simulator, salary-calculator など）
+各ツールの `index.html` を修正したとき、以下の基準でスナップショットを作成するか判断すること。
+
+---
+
+### スナップショットを作成するタイミング
+
+【作成する】
+- コンポーネントの見た目が変わる修正（色・サイズ・レイアウト・アニメーションなど）
+- 新しいUI要素の追加
+- 既存UI要素の削除・大幅な変更
+
+【作成しない】
+- コメントの追加・修正のみ
+- 変数名のリネームのみ（見た目に影響しない）
+- インデントや空白の整形のみ
+- ロジック・計算式のみの修正（UIに変化なし）
+
+【保存先】
+`tools/{ツールのフォルダ名}/old/`
+
+---
+
+### スナップショットの作成手順
+
+**① ファイル名の決定**
+形式: `{フォルダ名}-YYYY-MM-DD-{変更内容}.html`
+- フォルダ名: ツールのフォルダ名をそのまま使用
+  例: nisa-simulator, salary-calculator
+- 日付: 今日の日付（例: 2026-03-07）
+- 変更内容: 英数字・ハイフンのみ、20文字以内で変更を端的に表現
+  例: `button-color-update`, `add-result-card`, `layout-fix`
+
+ファイル名例:
+- `nisa-simulator-2026-03-07-button-color-update.html`
+- `salary-calculator-2026-03-07-add-result-card.html`
+
+**② インライン化して保存**
+対象ツールの `index.html` をベースに、以下のファイルをすべて1つのHTMLに統合する：
+
+- `shared/tokens.css` → `<style>` タグに埋め込む
+- `shared/components.css` → `<style>` タグに埋め込む
+- `shared/base.js` → `<script>` タグに埋め込む
+- ツール固有のCSS（存在する場合） → `<style>` タグに追加で埋め込む
+- ツール固有のJS（存在する場合） → `<script>` タグに追加で埋め込む
+
+統合後のHTMLの構造：
+\```html
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <!-- snapshot: {フォルダ名} YYYY-MM-DD {変更内容の説明} -->
+  <style>
+    /* === tokens.css === */
+    （tokens.cssの内容をそのまま貼る）
+
+    /* === components.css === */
+    （components.cssの内容をそのまま貼る）
+
+    /* === ツール固有CSS（存在する場合のみ） === */
+    （ツール固有CSSの内容をそのまま貼る）
+  </style>
+</head>
+<body>
+  （index.htmlのbody内容をそのまま貼る）
+  <script>
+    /* === base.js === */
+    （base.jsの内容をそのまま貼る）
+
+    /* === ツール固有JS（存在する場合のみ） === */
+    （ツール固有JSの内容をそのまま貼る）
+  </script>
+</body>
+</html>
+\```
+
+**③ 保存先**
+`tools/{ツールのフォルダ名}/history/{ファイル名}.html`
+
+---
+
+### 作業完了時の報告フォーマット
+
+ツールUIを修正したら、以下の形式で報告すること：
+
+対象ツール: （例: nisa-simulator）
+スナップショット作成: あり / なし
+理由: （なしの場合、スキップした理由を記載）
+ファイル名: （作成した場合のみ）
+変更概要: （何をどう変えたか1〜2行で）

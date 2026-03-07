@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>資産形成 取り崩しシミュレーション</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#101826;
+      --panel2:#0f1720;
+      --text:#e6edf3;
+      --muted:#9fb0c2;
+      --line:#233042;
+      --accent:#66e3c4;
+      --accent2:#7aa7ff;
+      --warn:#ffcc66;
+      --bad:#ff6b6b;
+      --good:#66e3c4;
+      --shadow: 0 14px 40px rgba(0,0,0,.45);
+      --radius:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: "Roboto", "Hiragino Kaku Gothic ProN", "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ ProN W3", "ヒラギノ角ゴ Pro W3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(122,167,255,.16), transparent 55%),
+                  radial-gradient(900px 500px at 90% 15%, rgba(102,227,196,.14), transparent 55%),
+                  radial-gradient(900px 500px at 30% 90%, rgba(255,204,102,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
+    header{
+      padding:28px 18px 12px;
+      max-width:1120px;
+      margin:0 auto;
+    }
+    h1{
+      margin:0;
+      font-weight:800;
+      letter-spacing:.02em;
+      font-size: clamp(20px, 2.2vw, 30px);
+    }
+    .sub{
+      margin-top:8px;
+      color:var(--muted);
+      line-height:1.6;
+      font-size: 14px;
+    }
+    .wrap{
+      max-width:1120px;
+      margin:0 auto;
+      padding: 10px 18px 28px;
+      display:grid;
+      grid-template-columns: 1.05fr 1.55fr;
+      gap:16px;
+    }
+    @media (max-width: 980px){
+      .wrap{grid-template-columns:1fr}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 14px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(10,14,20,.55);
+    }
+    .card .hd h2{
+      margin:0;
+      font-size:14px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color: var(--muted);
+      font-weight:800;
+    }
+    .card .bd{padding:14px}
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    @media (max-width: 520px){
+      .row{grid-template-columns:1fr}
+    }
+
+    label{display:block; font-size:12px; color:var(--muted); margin-bottom:6px}
+    input, select{
+      width:100%;
+      padding:10px 10px;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(5,8,12,.55);
+      color: var(--text);
+      outline:none;
+    }
+    input:focus, select:focus{border-color: rgba(102,227,196,.55); box-shadow: 0 0 0 4px rgba(102,227,196,.12)}
+
+    .inline{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .inline > *{flex:1}
+
+    .chips{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      cursor:pointer;
+      user-select:none;
+      padding:7px 12px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      font-size:12px;
+    }
+    .chip:hover{border-color: rgba(122,167,255,.55)}
+
+    .btns{display:flex; gap:10px; flex-wrap:wrap}
+    button{
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 14px;
+      font-weight:700;
+    }
+    button.primary{
+      border-color: rgba(102,227,196,.55);
+      background: linear-gradient(180deg, rgba(102,227,196,.18), rgba(102,227,196,.08));
+    }
+    button:hover{filter:brightness(1.08)}
+
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+    }
+    @media (max-width: 980px){
+      .kpis{grid-template-columns:1fr 1fr}
+    }
+    @media (max-width: 520px){
+      .kpis{grid-template-columns:1fr}
+    }
+    .kpi{
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding:12px;
+      min-height:78px;
+    }
+    .kpi .t{font-size:12px; color:var(--muted)}
+    .kpi .v{font-family:var(--mono); font-size:18px; margin-top:6px}
+    .kpi .s{font-size:12px; color:var(--muted); margin-top:6px}
+
+    .canvasWrap{
+      padding: 12px;
+    }
+    canvas{
+      width:100%;
+      height:320px;
+      background: rgba(0,0,0,.15);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      display:block;
+    }
+
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+      color: var(--muted);
+      font-size:12px;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:999px; display:inline-block; margin-right:6px;
+      border:1px solid rgba(255,255,255,.18);
+    }
+
+    .tableWrap{
+      overflow:auto;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    table{
+      width:100%;
+      border-collapse: collapse;
+      font-size:12px;
+      min-width: 720px;
+      background: rgba(255,255,255,.02);
+    }
+    thead th{
+      position:sticky;
+      top:0;
+      background: rgba(10,14,20,.95);
+      border-bottom:1px solid rgba(255,255,255,.10);
+      color: var(--muted);
+      text-align:right;
+      padding:10px 10px;
+      font-weight:800;
+      letter-spacing:.06em;
+    }
+    thead th:first-child, tbody td:first-child{text-align:left}
+    tbody td{
+      padding:8px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      text-align:right;
+      white-space:nowrap;
+    }
+    tbody tr:hover{background: rgba(122,167,255,.06)}
+
+    .note{
+      color: var(--muted);
+      font-size:12px;
+      line-height:1.7;
+    }
+
+    .pill{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      font-size:12px;
+      color: var(--muted);
+    }
+
+    .warnText{color: var(--warn)}
+    .badText{color: var(--bad)}
+    .goodText{color: var(--good)}
+
+    .footer{
+      max-width:1120px;
+      margin:0 auto;
+      padding: 0 18px 26px;
+      color: var(--muted);
+      font-size:12px;
+      line-height:1.7;
+    }
+    .back-to-index{ max-width:1120px; margin:0 auto; padding:0 18px 24px; text-align:center; }
+    .back-to-index a{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:10px 20px; background:rgba(102,227,196,0.12); border:1px solid rgba(102,227,196,0.35);
+      border-radius:12px; color:var(--accent); text-decoration:none; font-size:14px; font-weight:500;
+      transition:background .2s, border-color .2s;
+    }
+    .back-to-index a:hover{ background:rgba(102,227,196,0.2); border-color:var(--accent); }
+  </style>
+</head>
+<body>
+<header>
+  <h1>資産形成の取り崩しシミュレーション</h1>
+  <div class="sub">
+    つみたて → 運用 → 取り崩しを <span class="pill">年次</span> で試算します。<br>
+    「実質（インフレ調整）」と「名目（額面）」の両方を出します。計算は単純化したモデルです（税金・口座区分・相場変動の年内ブレは未考慮）。
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card" aria-label="入力">
+    <div class="hd">
+      <h2>Inputs</h2>
+      <div class="chips" id="presetChips">
+        <span class="chip" data-preset="balanced">標準</span>
+        <span class="chip" data-preset="conservative">保守</span>
+        <span class="chip" data-preset="aggressive">強気</span>
+        <span class="chip" data-preset="fire">FIRE風</span>
+      </div>
+    </div>
+    <div class="bd">
+
+      <div class="row">
+        <div>
+          <label for="startAge">開始年齢</label>
+          <input id="startAge" type="number" min="0" step="1" value="35" />
+        </div>
+        <div>
+          <label for="retireAge">取り崩し開始年齢</label>
+          <input id="retireAge" type="number" min="0" step="1" value="60" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="endAge">終了年齢（何歳まで見る？）</label>
+          <input id="endAge" type="number" min="0" step="1" value="95" />
+        </div>
+        <div>
+          <label for="initial">初期資産（円）</label>
+          <input id="initial" type="text" inputmode="numeric" data-comma="int" value="9,000,000" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="contrib">積立（年額・円）</label>
+          <input id="contrib" type="text" inputmode="numeric" data-comma="int" value="2,700,000" />
+        </div>
+        <div>
+          <label for="contribEndAge">積立終了年齢</label>
+          <input id="contribEndAge" type="number" min="0" step="1" value="60" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="nominalReturn">期待リターン（年率・%）</label>
+          <input id="nominalReturn" type="number" step="0.1" value="5.0" />
+        </div>
+        <div>
+          <label for="fee">運用コスト（年率・%）</label>
+          <input id="fee" type="number" step="0.01" value="0.2" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="inflation">インフレ率（年率・%）</label>
+          <input id="inflation" type="number" step="0.1" value="2.0" />
+        </div>
+        <div>
+          <label for="rebalance">取り崩し期リターン調整（%pt）</label>
+          <input id="rebalance" type="number" step="0.1" value="0.0" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="strategy">取り崩し方式</label>
+          <select id="strategy">
+            <option value="fixed">定額（名目）</option>
+            <option value="real">定額（実質＝インフレ調整）</option>
+            <option value="percent">定率（残高の%）</option>
+            <option value="guardrails">ガードレール（上げ下げ）</option>
+          </select>
+        </div>
+        <div>
+          <label for="withdraw">取り崩し（年額・円 or %）</label>
+          <input id="withdraw" type="text" inputmode="numeric" data-comma="smart" value="2,400,000" />
+        </div>
+      </div>
+
+      <div id="guardrailsBox" style="display:none">
+        <div class="row">
+          <div>
+            <label for="grBaseRate">基準率（% / 年）</label>
+            <input id="grBaseRate" type="number" step="0.1" value="4.0" />
+          </div>
+          <div>
+            <label for="grBand">バンド（±%）</label>
+            <input id="grBand" type="number" step="1" value="20" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="grStep">調整幅（%）</label>
+            <input id="grStep" type="number" step="1" value="10" />
+          </div>
+          <div>
+            <label for="grMinMax">下限/上限（基準の%）</label>
+            <div class="inline">
+              <input id="grMin" type="number" step="1" value="60" />
+              <input id="grMax" type="number" step="1" value="140" />
+            </div>
+          </div>
+        </div>
+        <div class="note">ガードレール：残高が「基準残高±バンド」を外れたら、取り崩し額をステップ分だけ上げ下げします（簡易版）。</div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="oneTimeAge">一時イベント年齢（任意）</label>
+          <input id="oneTimeAge" type="number" step="1" value="0" />
+        </div>
+        <div>
+          <label for="oneTimeAmount">一時入出金（円）※支出はマイナス</label>
+          <input id="oneTimeAmount" type="text" inputmode="numeric" data-comma="intSigned" value="0" />
+        </div>
+      </div>
+
+      <div class="btns">
+        <button class="primary" id="runBtn">再計算</button>
+        <button id="swapBtn" title="取り崩し額に4%ルール（開始時残高の4%）をセット">4%ルールをセット</button>
+        <button id="downloadBtn" title="結果をCSVで保存">CSVダウンロード</button>
+      </div>
+
+      <div style="margin-top:12px" class="note" id="statusNote"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="結果">
+    <div class="hd">
+      <h2>Results</h2>
+      <div class="pill" id="verPill">v1 (年次/単純モデル)</div>
+    </div>
+    <div class="bd">
+      <div class="kpis">
+        <div class="kpi">
+          <div class="t">終了時残高（名目）</div>
+          <div class="v" id="kpiEndNom">-</div>
+          <div class="s" id="kpiEndNomSub">-</div>
+        </div>
+        <div class="kpi">
+          <div class="t">終了時残高（実質）</div>
+          <div class="v" id="kpiEndReal">-</div>
+          <div class="s" id="kpiEndRealSub">-</div>
+        </div>
+        <div class="kpi">
+          <div class="t">枯渇年齢（もし枯渇したら）</div>
+          <div class="v" id="kpiDeplete">-</div>
+          <div class="s" id="kpiDepleteSub">-</div>
+        </div>
+      </div>
+
+      <div class="canvasWrap">
+        <canvas id="chart" width="980" height="360" aria-label="残高推移チャート"></canvas>
+        <div class="legend">
+          <span><span class="dot" style="background: var(--accent2)"></span>名目残高</span>
+          <span><span class="dot" style="background: var(--accent)"></span>実質残高</span>
+          <span><span class="dot" style="background: var(--warn)"></span>取り崩し（実質）</span>
+        </div>
+      </div>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>年齢</th>
+              <th>期首残高</th>
+              <th>積立</th>
+              <th>取り崩し</th>
+              <th>運用後残高</th>
+              <th>実質残高</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:12px" class="note">
+        ヒント：<span class="goodText">「定額（実質）」</span>は生活費の購買力を一定にしたい場合に向きます。<span class="warnText">「定率」</span>は枯渇しにくい反面、取り崩し額が上下します。
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="footer">
+  <b>注意：</b>税金（譲渡益課税・配当課税）、口座区分（NISA/iDeCo/課税）、年内の変動、生活費の臨時増減などは未考慮です。実務で使う場合は、前提を増やした「詳細版」に育てるのがおすすめです。
+</div>
+
+<div class="back-to-index">
+  <a href="../../index.html">← マネーツールへ戻る</a>
+</div>
+
+<script>
+  // ------------------------------
+  // Utils
+  // ------------------------------
+  const yen = (n) => {
+    if (!isFinite(n)) return '-';
+    const s = Math.round(n).toString();
+    return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+  // --- input comma formatting (no-regex) ---
+  const stripCommas = (s) => String(s ?? '').split(',').join('');
+
+  function keepNumericChars(s, allowDot){
+    const src = String(s ?? '');
+    let out = '';
+    for (let i = 0; i < src.length; i++){
+      const ch = src[i];
+      const isDigit = ch >= '0' && ch <= '9';
+      if (isDigit) out += ch;
+      else if (allowDot && ch === '.') out += ch;
+    }
+    return out;
+  }
+
+  function addCommasToDigits(digits){
+    // digits: only 0-9
+    if (!digits) return '';
+    let out = '';
+    let count = 0;
+    for (let i = digits.length - 1; i >= 0; i--){
+      out = digits[i] + out;
+      count++;
+      if (count === 3 && i !== 0){
+        out = ',' + out;
+        count = 0;
+      }
+    }
+    return out;
+  }
+
+  function formatIntLike(raw, allowSign){
+    let s = stripCommas(raw).trim();
+    if (!s) return '';
+
+    let sign = '';
+    if (allowSign && s[0] === '-'){
+      sign = '-';
+      s = s.slice(1);
+    }
+
+    let digits = keepNumericChars(s, false);
+    // remove leading zeros (keep single 0)
+    while (digits.length > 1 && digits[0] === '0') digits = digits.slice(1);
+
+    if (!digits) return sign ? '-' : '';
+    return sign + addCommasToDigits(digits);
+  }
+
+  function formatSmart(raw){
+    // percent mode etc: allow dot, but no comma formatting
+    let s = stripCommas(raw).trim();
+    if (!s) return '';
+
+    let sign = '';
+    if (s[0] === '-'){
+      sign = '-';
+      s = s.slice(1);
+    }
+
+    const hasDot = s.indexOf('.') !== -1;
+    if (hasDot){
+      // keep digits and dot
+      let cleaned = '';
+      let dotUsed = false;
+      for (let i = 0; i < s.length; i++){
+        const ch = s[i];
+        const isDigit = ch >= '0' && ch <= '9';
+        if (isDigit) cleaned += ch;
+        else if (ch === '.' && !dotUsed){
+          cleaned += '.';
+          dotUsed = true;
+        }
+      }
+      return sign + cleaned;
+    }
+
+    return formatIntLike(sign + s, true);
+  }
+
+  function getNum(el){
+    const raw = stripCommas(el?.value ?? '');
+    const s = String(raw).trim();
+    if (!s) return 0;
+
+    let sign = '';
+    let body = s;
+    if (body[0] === '-'){
+      sign = '-';
+      body = body.slice(1);
+    }
+
+    // keep digits and at most one dot
+    let cleaned = '';
+    let dotUsed = false;
+    for (let i = 0; i < body.length; i++){
+      const ch = body[i];
+      const isDigit = ch >= '0' && ch <= '9';
+      if (isDigit) cleaned += ch;
+      else if (ch === '.' && !dotUsed){
+        cleaned += '.';
+        dotUsed = true;
+      }
+    }
+
+    const n = Number(sign + cleaned);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function setFormatted(el, num){
+    if (!el) return;
+    const mode = el.dataset.comma || '';
+    if (mode === 'smart'){
+      const s = String(num);
+      el.value = (s.indexOf('.') !== -1) ? s : formatIntLike(s, true);
+      return;
+    }
+    if (mode === 'intSigned'){
+      el.value = formatIntLike(String(num), true) || '0';
+      return;
+    }
+    el.value = formatIntLike(String(num), false) || '0';
+  }
+
+  function attachCommaInput(el){
+    if (!el) return;
+    const mode = el.dataset.comma;
+
+    // initial format
+    el.value = (mode === 'smart') ? formatSmart(el.value)
+            : (mode === 'intSigned') ? (formatIntLike(el.value, true) || '0')
+            : (formatIntLike(el.value, false) || '0');
+
+    el.addEventListener('input', () => {
+      const start = el.selectionStart ?? el.value.length;
+      const before = el.value;
+
+      const formatted = (mode === 'smart') ? formatSmart(before)
+                      : (mode === 'intSigned') ? formatIntLike(before, true)
+                      : formatIntLike(before, false);
+
+      // keep same count of digits on the left
+      const leftRaw = stripCommas(before.slice(0, start));
+      let leftDigits = 0;
+      for (let i = 0; i < leftRaw.length; i++){
+        const ch = leftRaw[i];
+        if (ch >= '0' && ch <= '9') leftDigits++;
+      }
+
+      el.value = formatted;
+
+      let pos = 0;
+      let seen = 0;
+      while (pos < el.value.length && seen < leftDigits){
+        const ch = el.value[pos];
+        if (ch >= '0' && ch <= '9') seen++;
+        pos++;
+      }
+      el.setSelectionRange(pos, pos);
+    });
+
+    el.addEventListener('blur', () => {
+      if (stripCommas(el.value).trim() === '' || el.value === '-') el.value = '0';
+      el.dispatchEvent(new Event('input'));
+    });
+  }
+
+  function $(id){ return document.getElementById(id); }
+
+  function getInputs(){
+    const startAge = +$('startAge').value;
+    const retireAge = +$('retireAge').value;
+    const endAge = +$('endAge').value;
+    const initial = getNum($('initial'));
+    const contrib = getNum($('contrib'));
+    const contribEndAge = +$('contribEndAge').value;
+    const nominalReturn = (+$('nominalReturn').value)/100;
+    const fee = (+$('fee').value)/100;
+    const inflation = (+$('inflation').value)/100;
+    const rebalance = (+$('rebalance').value)/100; // percentage points -> decimal
+    const strategy = $('strategy').value;
+    const withdrawRaw = getNum($('withdraw'));
+    const oneTimeAge = +$('oneTimeAge').value;
+    const oneTimeAmount = getNum($('oneTimeAmount'));
+
+    // Guardrails
+    const grBaseRate = (+$('grBaseRate')?.value || 4)/100;
+    const grBand = (+$('grBand')?.value || 20)/100;
+    const grStep = (+$('grStep')?.value || 10)/100;
+    const grMin = (+$('grMin')?.value || 60)/100;
+    const grMax = (+$('grMax')?.value || 140)/100;
+
+    return {
+      startAge, retireAge, endAge, initial, contrib, contribEndAge,
+      nominalReturn, fee, inflation, rebalance,
+      strategy, withdrawRaw,
+      oneTimeAge, oneTimeAmount,
+      grBaseRate, grBand, grStep, grMin, grMax,
+    };
+  }
+
+  // ------------------------------
+  // Core simulation (annual steps)
+  // ------------------------------
+  function simulate(p){
+    // Validation
+    const errs = [];
+    if (p.endAge <= p.startAge) errs.push('終了年齢は開始年齢より大きくしてください');
+    if (p.retireAge < p.startAge) errs.push('取り崩し開始年齢は開始年齢以上にしてください');
+    if (p.contribEndAge < p.startAge) errs.push('積立終了年齢は開始年齢以上にしてください');
+    if (p.initial < 0 || p.contrib < 0) errs.push('金額は0以上にしてください');
+    if (p.nominalReturn < -0.99 || p.nominalReturn > 2) errs.push('リターンの入力が極端です');
+    if (p.fee < 0 || p.fee > 0.05) errs.push('コストの入力が極端です');
+    if (p.inflation < -0.05 || p.inflation > 0.2) errs.push('インフレ率の入力が極端です');
+
+    if (errs.length) return { ok:false, errs };
+
+    const years = [];
+
+    let bal = p.initial;
+    let priceIndex = 1.0; // start = 1
+
+    // Guardrails state
+    let grWithdrawalNom = null;
+    let grBaseBalance = null;
+
+    // Precompute base values at retirement start
+    // (Used for guardrails)
+    // We'll set these in the year when age == retireAge.
+
+    let depletedAge = null;
+
+    for (let age = p.startAge; age <= p.endAge; age++){
+      const atRetire = (age >= p.retireAge);
+      const canContrib = (age < p.contribEndAge);
+      const yearReturn = (p.nominalReturn - p.fee) + (atRetire ? p.rebalance : 0);
+
+      const begin = bal;
+
+      // Contribution at beginning of year (simple convention)
+      const c = canContrib ? p.contrib : 0;
+      bal += c;
+
+      // One-time event applied at beginning (after contrib)
+      const one = (p.oneTimeAge && age === p.oneTimeAge) ? p.oneTimeAmount : 0;
+      bal += one;
+
+      // Determine withdrawal
+      let w = 0;
+      if (atRetire){
+        if (p.strategy === 'fixed'){
+          w = p.withdrawRaw;
+        } else if (p.strategy === 'real'){
+          // keep purchasing power: nominal withdrawal grows with inflation
+          // withdrawRaw is in today's yen
+          w = p.withdrawRaw * priceIndex;
+        } else if (p.strategy === 'percent'){
+          // withdrawRaw is percent
+          w = bal * (p.withdrawRaw/100);
+        } else if (p.strategy === 'guardrails'){
+          // Initialize base values at first retirement year
+          if (grBaseBalance === null){
+            grBaseBalance = bal;
+            grWithdrawalNom = bal * p.grBaseRate; // nominal
+          }
+
+          // Base balance adjusted with inflation for reference
+          const baseInflAdj = grBaseBalance * priceIndex;
+          const upper = baseInflAdj * (1 + p.grBand);
+          const lower = baseInflAdj * (1 - p.grBand);
+
+          // Adjust withdrawal nominally in steps, within min/max bounds of base withdrawal
+          const baseW = (grBaseBalance * p.grBaseRate) * priceIndex;
+          const minW = baseW * p.grMin;
+          const maxW = baseW * p.grMax;
+
+          // If balance breaks out of band, adjust
+          if (bal > upper){
+            grWithdrawalNom = clamp(grWithdrawalNom * (1 + p.grStep), minW, maxW);
+          } else if (bal < lower){
+            grWithdrawalNom = clamp(grWithdrawalNom * (1 - p.grStep), minW, maxW);
+          }
+          w = grWithdrawalNom;
+        }
+      }
+
+      // Apply withdrawal
+      const wApplied = Math.min(w, Math.max(0, bal));
+      bal -= wApplied;
+
+      // Growth
+      bal = bal * (1 + yearReturn);
+
+      // End-of-year price index update (inflation)
+      priceIndex = priceIndex * (1 + p.inflation);
+
+      const end = bal;
+      const realEnd = (priceIndex === 0) ? end : end / priceIndex;
+      const realW = (priceIndex === 0) ? wApplied : wApplied / priceIndex;
+
+      // Detect depletion (first year end <= 0.5 yen)
+      if (depletedAge === null && end <= 0.5){
+        depletedAge = age;
+      }
+
+      years.push({
+        age,
+        begin,
+        contrib: c,
+        oneTime: one,
+        withdraw: wApplied,
+        end,
+        realEnd,
+        realWithdraw: realW,
+        priceIndex,
+      });
+
+      // If depleted, keep running as zeros (to fill table/graph)
+      if (end <= 0.5){
+        bal = 0;
+      }
+    }
+
+    return { ok:true, years, depletedAge };
+  }
+
+  // ------------------------------
+  // Rendering
+  // ------------------------------
+  function render(res, p){
+    const years = res.years;
+    const last = years[years.length - 1];
+
+    $('kpiEndNom').textContent = '¥' + yen(last.end);
+    $('kpiEndNomSub').textContent = `開始${p.startAge}→終了${p.endAge}（名目）`;
+
+    $('kpiEndReal').textContent = '¥' + yen(last.realEnd);
+    $('kpiEndRealSub').textContent = `今日の価値に換算（インフレ${(p.inflation*100).toFixed(1)}%）`;
+
+    if (res.depletedAge === null){
+      $('kpiDeplete').textContent = '枯渇なし';
+      $('kpiDepleteSub').textContent = '終了年齢まで継続';
+    } else {
+      $('kpiDeplete').textContent = `${res.depletedAge}歳`;
+      $('kpiDepleteSub').textContent = '残高が0付近になりました';
+    }
+
+    // Table
+    const tbody = $('tbody');
+    tbody.innerHTML = '';
+    for (const y of years){
+      const tr = document.createElement('tr');
+      const tdAge = document.createElement('td');
+      tdAge.textContent = y.age;
+
+      const tdBegin = document.createElement('td');
+      tdBegin.textContent = '¥' + yen(y.begin);
+
+      const tdC = document.createElement('td');
+      const cTotal = y.contrib + y.oneTime;
+      tdC.textContent = '¥' + yen(cTotal);
+
+      const tdW = document.createElement('td');
+      tdW.textContent = '¥' + yen(y.withdraw);
+
+      const tdEnd = document.createElement('td');
+      tdEnd.textContent = '¥' + yen(y.end);
+
+      const tdReal = document.createElement('td');
+      tdReal.textContent = '¥' + yen(y.realEnd);
+
+      tr.append(tdAge, tdBegin, tdC, tdW, tdEnd, tdReal);
+      tbody.appendChild(tr);
+    }
+
+    // Status note
+    const wModeLabel = {
+      fixed: '定額（名目）',
+      real: '定額（実質）',
+      percent: '定率',
+      guardrails: 'ガードレール'
+    }[p.strategy];
+
+    const rNet = (p.nominalReturn - p.fee + (p.retireAge ? 0 : 0));
+    $('statusNote').innerHTML = `\
+      <div class="pill">方式：<b style="color:var(--text)">${wModeLabel}</b></div>
+      <div class="pill">期待リターン（手数料差引）：<b style="color:var(--text)">${((p.nominalReturn - p.fee)*100).toFixed(2)}%</b></div>
+      <div class="pill">取り崩し開始：<b style="color:var(--text)">${p.retireAge}歳</b></div>
+      <div class="pill">積立：<b style="color:var(--text)">年¥${yen(p.contrib)}</b>（〜${p.contribEndAge}歳未満）</div>
+    `;
+
+    drawChart(years, p);
+  }
+
+  function drawChart(years, p){
+    const canvas = $('chart');
+    const ctx = canvas.getContext('2d');
+
+    // Fit to device pixels
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const cssW = canvas.clientWidth;
+    const cssH = canvas.clientHeight;
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    ctx.scale(dpr, dpr);
+
+    const W = cssW, H = cssH;
+    ctx.clearRect(0,0,W,H);
+
+    const pad = {l:52, r:16, t:16, b:34};
+    const plotW = W - pad.l - pad.r;
+    const plotH = H - pad.t - pad.b;
+
+    const ages = years.map(d=>d.age);
+    const nom = years.map(d=>d.end);
+    const real = years.map(d=>d.realEnd);
+    const wReal = years.map(d=>d.realWithdraw);
+
+    const maxY = Math.max(1, ...nom, ...real, ...wReal.map(v=>v*3));
+    const minY = 0;
+
+    const x = (i)=> pad.l + (i/(years.length-1||1))*plotW;
+    const y = (v)=> pad.t + (1 - (v-minY)/(maxY-minY))*plotH;
+
+    // Grid
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    ctx.strokeStyle = 'rgba(255,255,255,.25)';
+    ctx.lineWidth = 1;
+
+    const gridN = 5;
+    for (let g=0; g<=gridN; g++){
+      const yy = pad.t + (g/gridN)*plotH;
+      ctx.beginPath();
+      ctx.moveTo(pad.l, yy);
+      ctx.lineTo(W - pad.r, yy);
+      ctx.stroke();
+
+      const val = maxY * (1 - g/gridN);
+      ctx.fillStyle = 'rgba(230,237,243,.75)';
+      ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('¥' + compactYen(val), pad.l - 8, yy);
+    }
+    ctx.restore();
+
+    // Age ticks
+    ctx.save();
+    ctx.fillStyle = 'rgba(230,237,243,.75)';
+    ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+    const tickEvery = Math.max(1, Math.round(years.length/8));
+    for (let i=0; i<years.length; i+=tickEvery){
+      ctx.fillText(String(ages[i]), x(i), pad.t + plotH + 8);
+    }
+    ctx.restore();
+
+    // Retirement marker
+    const retireIdx = clamp(p.retireAge - p.startAge, 0, years.length-1);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,204,102,.65)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6,6]);
+    ctx.beginPath();
+    ctx.moveTo(x(retireIdx), pad.t);
+    ctx.lineTo(x(retireIdx), pad.t + plotH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(255,204,102,.85)';
+    ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('取り崩し開始', x(retireIdx)+6, pad.t + 14);
+    ctx.restore();
+
+    // Series helper
+    function drawLine(arr, stroke){
+      ctx.save();
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      arr.forEach((v,i)=>{
+        const xx = x(i), yy = y(v);
+        if (i===0) ctx.moveTo(xx,yy);
+        else ctx.lineTo(xx,yy);
+      });
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Fill under nominal for depth
+    ctx.save();
+    ctx.fillStyle = 'rgba(122,167,255,.10)';
+    ctx.beginPath();
+    years.forEach((d,i)=>{
+      const xx = x(i), yy = y(d.end);
+      if (i===0) ctx.moveTo(xx, yy);
+      else ctx.lineTo(xx, yy);
+    });
+    ctx.lineTo(x(years.length-1), pad.t + plotH);
+    ctx.lineTo(x(0), pad.t + plotH);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    drawLine(nom, getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim() || '#7aa7ff');
+    drawLine(real, getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#66e3c4');
+
+    // Withdrawal as thin line (real)
+    ctx.save();
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--warn').trim() || '#ffcc66';
+    ctx.lineWidth = 1.6;
+    ctx.globalAlpha = 0.9;
+    ctx.beginPath();
+    wReal.forEach((v,i)=>{
+      const xx = x(i), yy = y(v);
+      if (i===0) ctx.moveTo(xx,yy);
+      else ctx.lineTo(xx,yy);
+    });
+    ctx.stroke();
+    ctx.restore();
+
+    // Tooltip on hover
+    canvas.onmousemove = (ev) => {
+      const rect = canvas.getBoundingClientRect();
+      const mx = ev.clientX - rect.left;
+      const idx = Math.round(((mx - pad.l) / plotW) * (years.length-1));
+      const i = clamp(idx, 0, years.length-1);
+      drawChart(years, p); // redraw
+
+      const d = years[i];
+      const xx = x(i);
+
+      ctx.save();
+      // vertical line
+      ctx.strokeStyle = 'rgba(255,255,255,.25)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(xx, pad.t);
+      ctx.lineTo(xx, pad.t + plotH);
+      ctx.stroke();
+
+      // points
+      const pts = [
+        {v:d.end, c:getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim() || '#7aa7ff'},
+        {v:d.realEnd, c:getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#66e3c4'},
+        {v:d.realWithdraw, c:getComputedStyle(document.documentElement).getPropertyValue('--warn').trim() || '#ffcc66'},
+      ];
+      pts.forEach(p2=>{
+        ctx.fillStyle = p2.c;
+        ctx.beginPath();
+        ctx.arc(xx, y(p2.v), 3.5, 0, Math.PI*2);
+        ctx.fill();
+      });
+
+      // tooltip box
+      const lines = [
+        `年齢: ${d.age}`,
+        `名目残高: ¥${yen(d.end)}`,
+        `実質残高: ¥${yen(d.realEnd)}`,
+        `取り崩し(実質): ¥${yen(d.realWithdraw)}`,
+      ];
+      const boxW = 220;
+      const boxH = 16 + lines.length * 16;
+      const bx = clamp(xx + 10, pad.l, W - pad.r - boxW);
+      const by = pad.t + 10;
+
+      ctx.fillStyle = 'rgba(10,14,20,.92)';
+      ctx.strokeStyle = 'rgba(255,255,255,.14)';
+      ctx.lineWidth = 1;
+      roundRect(ctx, bx, by, boxW, boxH, 10);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(230,237,243,.92)';
+      ctx.font = '12px ' + getComputedStyle(document.body).fontFamily;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'top';
+      lines.forEach((t, k)=>{
+        ctx.fillText(t, bx + 10, by + 10 + k*16);
+      });
+
+      ctx.restore();
+    };
+
+    canvas.onmouseleave = () => {
+      canvas.onmousemove = null;
+      drawChart(years, p);
+    };
+  }
+
+  function compactYen(v){
+    if (!isFinite(v)) return '-';
+    const abs = Math.abs(v);
+    if (abs >= 1e8) return (v/1e8).toFixed(1) + '億';
+    if (abs >= 1e4) return (v/1e4).toFixed(0) + '万';
+    return Math.round(v).toString();
+  }
+
+  function roundRect(ctx, x, y, w, h, r){
+    const rr = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+rr, y);
+    ctx.arcTo(x+w, y, x+w, y+h, rr);
+    ctx.arcTo(x+w, y+h, x, y+h, rr);
+    ctx.arcTo(x, y+h, x, y, rr);
+    ctx.arcTo(x, y, x+w, y, rr);
+    ctx.closePath();
+  }
+
+  // ------------------------------
+  // Presets
+  // ------------------------------
+  const presets = {
+    balanced: {
+      startAge:35, retireAge:60, endAge:95,
+      initial:9000000, contrib:2700000, contribEndAge:60,
+      nominalReturn:5.0, fee:0.2, inflation:2.0, rebalance:0.0,
+      strategy:'real', withdraw:2400000,
+      oneTimeAge:0, oneTimeAmount:0,
+      grBaseRate:4.0, grBand:20, grStep:10, grMin:60, grMax:140,
+    },
+    conservative: {
+      startAge:35, retireAge:60, endAge:95,
+      initial:9000000, contrib:2400000, contribEndAge:60,
+      nominalReturn:3.5, fee:0.25, inflation:2.0, rebalance:-0.5,
+      strategy:'real', withdraw:2200000,
+      oneTimeAge:0, oneTimeAmount:0,
+      grBaseRate:3.5, grBand:20, grStep:10, grMin:60, grMax:130,
+    },
+    aggressive: {
+      startAge:35, retireAge:60, endAge:95,
+      initial:9000000, contrib:3000000, contribEndAge:60,
+      nominalReturn:6.5, fee:0.2, inflation:2.0, rebalance:0.0,
+      strategy:'real', withdraw:2600000,
+      oneTimeAge:0, oneTimeAmount:0,
+      grBaseRate:4.0, grBand:20, grStep:10, grMin:60, grMax:140,
+    },
+    fire: {
+      startAge:35, retireAge:50, endAge:95,
+      initial:9000000, contrib:2700000, contribEndAge:50,
+      nominalReturn:5.5, fee:0.2, inflation:2.0, rebalance:-0.3,
+      strategy:'guardrails', withdraw:0,
+      oneTimeAge:0, oneTimeAmount:0,
+      grBaseRate:4.0, grBand:20, grStep:10, grMin:60, grMax:140,
+    }
+  };
+
+  function applyPreset(key){
+    const a = presets[key];
+    if (!a) return;
+    $('startAge').value = a.startAge;
+    $('retireAge').value = a.retireAge;
+    $('endAge').value = a.endAge;
+    setFormatted($('initial'), a.initial);
+    setFormatted($('contrib'), a.contrib);
+    $('contribEndAge').value = a.contribEndAge;
+    $('nominalReturn').value = a.nominalReturn;
+    $('fee').value = a.fee;
+    $('inflation').value = a.inflation;
+    $('rebalance').value = a.rebalance;
+    $('strategy').value = a.strategy;
+    (a.strategy === 'percent') ? ($('withdraw').value = String(a.withdraw)) : setFormatted($('withdraw'), a.withdraw);
+    $('oneTimeAge').value = a.oneTimeAge;
+    setFormatted($('oneTimeAmount'), a.oneTimeAmount);
+
+    $('grBaseRate').value = a.grBaseRate;
+    $('grBand').value = a.grBand;
+    $('grStep').value = a.grStep;
+    $('grMin').value = a.grMin;
+    $('grMax').value = a.grMax;
+
+    onStrategyChange();
+    run();
+  }
+
+  // ------------------------------
+  // CSV
+  // ------------------------------
+  function toCSV(years){
+    const head = ['age','begin','contrib_plus_one','withdraw','end','real_end'];
+    const rows = [head.join(',')];
+    years.forEach(d=>{
+      const c = d.contrib + d.oneTime;
+      rows.push([d.age, round2(d.begin), round2(c), round2(d.withdraw), round2(d.end), round2(d.realEnd)].join(','));
+    });
+    return rows.join('\n');
+  }
+  function round2(v){ return Math.round(v*100)/100; }
+  function download(filename, text){
+    const blob = new Blob([text], {type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // ------------------------------
+  // Wiring
+  // ------------------------------
+  let lastResult = null;
+  function run(){
+    const p = getInputs();
+    const res = simulate(p);
+    if (!res.ok){
+      $('statusNote').innerHTML = `<span class="badText">${res.errs.join(' / ')}</span>`;
+      return;
+    }
+    lastResult = {res, p};
+    render(res, p);
+  }
+
+  function onStrategyChange(){
+    const s = $('strategy').value;
+    $('guardrailsBox').style.display = (s === 'guardrails') ? 'block' : 'none';
+
+    // Change withdraw label hint via placeholder-like behavior
+    if (s === 'percent'){
+      $('withdraw').step = '0.1';
+      $('withdraw').value = $('withdraw').value || '4.0';
+    } else {
+      $('withdraw').step = '10000';
+    }
+
+    // If guardrails, withdraw input is not used
+    $('withdraw').disabled = (s === 'guardrails');
+  }
+
+  $('runBtn').addEventListener('click', run);
+  $('strategy').addEventListener('change', ()=>{ onStrategyChange(); run(); });
+
+  // Instant recompute on input (light debounce)
+  let t = null;
+  document.querySelectorAll('input,select').forEach(el=>{
+    el.addEventListener('input', ()=>{
+      clearTimeout(t);
+      t = setTimeout(run, 120);
+    });
+  });
+
+  $('presetChips').addEventListener('click', (ev)=>{
+    const chip = ev.target.closest('.chip');
+    if (!chip) return;
+    applyPreset(chip.dataset.preset);
+  });
+
+  $('swapBtn').addEventListener('click', ()=>{
+    const p = getInputs();
+    // set withdrawal to 4% rule based on balance at retirement start (after contribution and one-time event)
+    const sim = simulate({...p, strategy:'fixed', withdrawRaw:0});
+    if (!sim.ok) return;
+
+    const idx = clamp(p.retireAge - p.startAge, 0, sim.years.length-1);
+    // Use year beginning balance (after contrib + one-time is hard to know); approximate with "begin + contrib + oneTime" of that age
+    const y = sim.years[idx];
+    const base = (y.begin + y.contrib + y.oneTime);
+    const w = base * 0.04;
+
+    $('strategy').value = 'real';
+    onStrategyChange();
+    $('withdraw').disabled = false;
+    $('withdraw').step = '10000';
+    setFormatted($('withdraw'), Math.round(w/10000)*10000);
+    run();
+  });
+
+  $('downloadBtn').addEventListener('click', ()=>{
+    if (!lastResult) return;
+    const csv = toCSV(lastResult.res.years);
+    const p = lastResult.p;
+    download(`withdraw_sim_${p.startAge}-${p.endAge}.csv`, csv);
+  });
+
+  // Init
+  onStrategyChange();
+  ['initial','contrib','withdraw','oneTimeAmount'].forEach(id=>attachCommaInput($(id)));
+  run();
+  window.addEventListener('resize', ()=>{ if (lastResult) render(lastResult.res, lastResult.p); });
+</script>
+</body>
+</html>

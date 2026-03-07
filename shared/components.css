@@ -1,0 +1,1081 @@
+/* ══════════════════════════════════════════
+   COMPONENTS — Mint Design System
+   base-design-system.html のスタイル定義を抽出
+══════════════════════════════════════════ */
+@import './tokens.css';
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+/* ── Reset ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--mint-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ══════════════════════════════════════════
+   KEYFRAMES
+══════════════════════════════════════════ */
+@keyframes shimmerBar    { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+@keyframes secFadeIn     { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulseBadge    { 0%,100%{box-shadow:0 2px 12px var(--accent-border)} 50%{box-shadow:0 4px 22px rgba(74,140,111,0.45)} }
+@keyframes barShimmer    { 0%{left:-100%} 100%{left:200%} }
+@keyframes dsConfettiFall{ 0%{transform:translateY(-20px) rotate(0deg) scale(0);opacity:1} 100%{transform:translateY(100vh) rotate(720deg) scale(0.4);opacity:0} }
+@keyframes fadeInDown    { from{opacity:0;transform:translateY(-12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeInUp      { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes floatLeaf     { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-8px) rotate(3deg)} }
+
+/* ══════════════════════════════════════════
+   ds-badge
+   インラインバッジ（ステータス・ラベル表示）
+══════════════════════════════════════════ */
+.ds-badge {
+  display: inline-block;
+  background: var(--accent); color: #fff;
+  font-size: 11px; letter-spacing: 0.14em;
+  padding: 4px 16px; border-radius: 20px; font-weight: 500;
+  box-shadow: 0 2px 12px var(--accent-border);
+  animation: pulseBadge 3s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════
+   ds-card
+   ホワイトカード（グリーンシマーバー付き）
+══════════════════════════════════════════ */
+.ds-card {
+  background: var(--card-bg); border-radius: 28px; padding: 28px;
+  box-shadow: 0 8px 40px var(--shadow), 0 1px 4px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8);
+  position: relative; overflow: hidden;
+}
+.ds-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-deep), var(--accent));
+  background-size: 200%; animation: shimmerBar 3s linear infinite;
+  border-radius: 28px 28px 0 0;
+}
+
+/* ══════════════════════════════════════════
+   ds-input
+   ボーダー付きテキスト入力（フルワイド）
+══════════════════════════════════════════ */
+.ds-input-wrap { position: relative; }
+.ds-input {
+  width: 100%; padding: 16px 56px 16px 20px;
+  font-size: 20px; font-family: 'Roboto', sans-serif; font-weight: 300;
+  color: var(--text-main); border: 2px solid var(--mint-light);
+  border-radius: 16px; outline: none; background: var(--mint-pale);
+  transition: all 0.3s ease; letter-spacing: 0.04em;
+}
+.ds-input::placeholder { color: var(--placeholder); font-weight: 300; font-size: 16px; }
+.ds-input:focus { border-color: var(--accent); background: var(--card-bg); box-shadow: 0 0 0 4px rgba(168,213,186,0.25); }
+.ds-input-unit {
+  position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+  font-size: 13px; color: var(--sub-text); pointer-events: none;
+}
+
+/* ══════════════════════════════════════════
+   Buttons
+══════════════════════════════════════════ */
+.ds-btn-primary {
+  background: var(--accent-deep); color: #fff;
+  border: none; border-radius: 20px; padding: 10px 24px;
+  font-size: 13px; font-family: inherit; font-weight: 500; letter-spacing: 0.06em;
+  cursor: pointer; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 2px 12px rgba(74,140,111,0.35);
+}
+.ds-btn-primary:hover { transform: scale(1.05); box-shadow: 0 4px 18px rgba(74,140,111,0.45); }
+.ds-btn-primary:active { transform: scale(0.96); }
+
+.ds-btn-secondary {
+  background: transparent; color: var(--sub-text);
+  border: 1.5px solid var(--mint-light); border-radius: 20px; padding: 9px 22px;
+  font-size: 13px; font-family: inherit; letter-spacing: 0.06em;
+  cursor: pointer; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.ds-btn-secondary:hover { border-color: var(--accent-deep); color: var(--accent-deep); background: var(--mint-pale); transform: scale(1.05); }
+.ds-btn-secondary:active { transform: scale(0.96); }
+
+.ds-btn-ghost {
+  background: transparent; color: var(--sub-text);
+  border: none; border-radius: 8px; padding: 8px 16px;
+  font-size: 13px; font-family: inherit; cursor: pointer;
+  transition: all 0.2s ease;
+}
+.ds-btn-ghost:hover { background: var(--mint-pale); color: var(--text-main); }
+
+/* ══════════════════════════════════════════
+   ds-segment
+   セグメントコントロール（タブ切り替え）
+══════════════════════════════════════════ */
+.ds-segment {
+  display: flex; gap: 6px; background: var(--mint-pale);
+  padding: 5px; border-radius: 14px; width: fit-content;
+}
+.ds-seg-btn {
+  padding: 9px 20px; border: none; border-radius: 10px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  color: var(--sub-text); background: transparent; letter-spacing: 0.04em;
+  font-family: inherit;
+}
+.ds-seg-btn.active {
+  background: var(--card-bg); color: var(--accent-deep);
+  box-shadow: 0 2px 10px var(--shadow); transform: scale(1.02);
+}
+.ds-seg-btn:hover:not(.active) { background: rgba(168,213,186,0.2); }
+
+/* ══════════════════════════════════════════
+   ds-result
+   結果カード（KPI単体表示）
+══════════════════════════════════════════ */
+.ds-result {
+  background: var(--mint-pale); border-radius: 16px; padding: 18px 20px;
+  border: 1.5px solid var(--mint-light); margin-bottom: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.ds-result:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow); }
+.ds-result.highlight {
+  background: linear-gradient(135deg, #f0faf6, #e8f5f1);
+  border-color: var(--accent); box-shadow: 0 4px 20px rgba(74,140,111,0.1);
+}
+.ds-result-label { font-size: 11px; color: var(--sub-text); margin-bottom: 5px; letter-spacing: 0.08em; }
+.ds-result-value {
+  font-family: 'Roboto', sans-serif; font-size: 26px; font-weight: 300;
+  color: var(--text-main); display: flex; align-items: baseline; gap: 4px;
+}
+.ds-result-unit { font-family: 'Hiragino Kaku Gothic ProN', sans-serif; font-size: 13px; color: var(--sub-text); font-weight: 400; }
+
+/* ══════════════════════════════════════════
+   ds-progress
+   進捗バー（グラデーション＋シマー）
+══════════════════════════════════════════ */
+.ds-progress-bg { height: 6px; background: var(--mint-light); border-radius: 3px; overflow: hidden; }
+.ds-progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-deep));
+  border-radius: 3px; transition: width 1s cubic-bezier(0.22,0.61,0.36,1);
+  position: relative; overflow: hidden;
+}
+.ds-progress-fill::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: barShimmer 2s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════
+   ds-divider
+   区切り線（フェードグラデーション）
+══════════════════════════════════════════ */
+.ds-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--mint-light), transparent); margin: 20px 0; }
+
+/* ══════════════════════════════════════════
+   ds-form-row
+   ラベル＋インプットの横並びレイアウト
+   --form-label-w でラベル幅をカスタマイズ可能（デフォルト 200px）
+══════════════════════════════════════════ */
+.ds-form-rows { display: flex; flex-direction: column; gap: clamp(18px, 3.5vw, 26px); }
+.ds-form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+@media (min-width: 560px) {
+  .ds-form-row {
+    grid-template-columns: var(--form-label-w, 200px) 1fr;
+    align-items: center;
+    gap: 20px;
+  }
+}
+.ds-form-row-label { display: flex; flex-direction: column; gap: 4px; }
+.ds-form-row-label .lname {
+  font-size: clamp(0.9rem, 2.8vw, 1.05rem);
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.3;
+}
+.ds-form-row-label .ldesc {
+  font-size: clamp(0.65rem, 2vw, 0.75rem);
+  color: var(--sub-text);
+  line-height: 1.5;
+}
+.ds-form-row-right { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+
+/* ══════════════════════════════════════════
+   ds-toast
+   フローティングトースト通知
+══════════════════════════════════════════ */
+.ds-toast {
+  position: fixed; bottom: 30px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--accent-deep); color: #fff; padding: 12px 28px;
+  border-radius: 40px; font-size: 13px; letter-spacing: 0.08em;
+  box-shadow: 0 6px 24px rgba(74,140,111,0.4);
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s ease;
+  opacity: 0; z-index: 9999; white-space: nowrap; pointer-events: none;
+}
+.ds-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ══════════════════════════════════════════
+   ds-confetti
+   コンフェッティエフェクト用コンテナ
+══════════════════════════════════════════ */
+#ds-confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9998; overflow: hidden; }
+.ds-confetti-piece { position: absolute; animation: dsConfettiFall linear forwards; opacity: 0; }
+
+/* ══════════════════════════════════════════
+   ds-range
+   シンプルスライダー
+══════════════════════════════════════════ */
+.ds-range {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 6px;
+  border-radius: 3px; background: var(--mint-light); outline: none; cursor: pointer;
+}
+.ds-range::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  cursor: pointer; box-shadow: 0 2px 8px rgba(74,140,111,0.4);
+  border: 2px solid #fff; transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+.ds-range::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+/* ══════════════════════════════════════════
+   note-box / dashed-box
+   注釈・補足ボックス
+══════════════════════════════════════════ */
+.note-box {
+  background: rgba(168,213,186,0.1); border-left: 3px solid var(--accent);
+  border-radius: 12px; padding: 14px 18px; font-size: 12px;
+  color: var(--sub-text); line-height: 1.8; letter-spacing: 0.05em;
+}
+.dashed-box {
+  border: 1px dashed var(--mint-light); border-radius: 12px;
+  padding: 14px 18px; background: var(--mint-pale); font-size: 12px;
+  color: var(--sub-text); line-height: 1.8; font-family: 'Roboto Mono', monospace;
+}
+
+/* ══════════════════════════════════════════
+   ① ds-input-stepper
+   数値入力 + スライダー + ±ボタン セット
+══════════════════════════════════════════ */
+.ds-val-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.ds-num-edit {
+  font-size: clamp(1.5rem, 5.5vw, 2rem); font-weight: 300;
+  color: var(--text-main); font-family: 'Roboto', sans-serif;
+  border: none; border-bottom: 2px solid var(--mint-light); outline: none;
+  background: transparent; width: 100px; -moz-appearance: textfield;
+  padding: 0 4px 4px; transition: border-color .25s ease; line-height: 1.1;
+}
+.ds-num-edit:focus { border-bottom-color: var(--accent-deep); }
+.ds-num-edit::-webkit-outer-spin-button,
+.ds-num-edit::-webkit-inner-spin-button { -webkit-appearance: none; }
+.ds-val-unit { font-size: 0.95rem; color: var(--sub-text); font-weight: 500; }
+
+.ds-input-stepper { display: flex; align-items: center; gap: 10px; width: 100%; }
+.ds-pm-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: transparent;
+  color: var(--accent-deep);
+  border: 1.5px solid var(--accent);
+  cursor: pointer; font-size: 1rem; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(74,140,111,0.12);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+  user-select: none; line-height: 1;
+}
+.ds-pm-btn:hover {
+  background: var(--mint-pale);
+  border-color: var(--accent-deep);
+  box-shadow: 0 1px 4px rgba(74,140,111,0.12);
+  transform: none;
+}
+.ds-pm-btn:active { transform: scale(0.9); }
+
+/* ピル+縦線のラッパー */
+.ds-stepper-wrap {
+  flex: 1; min-width: 0;
+  position: relative;
+}
+/* ピルの高さ分の余白 */
+.ds-stepper-wrap-inner {
+  position: relative;
+  padding-top: 38px;
+}
+/* B1フローティングピル */
+.ds-stepper-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.ds-stepper-pill-label {
+  background: #fff;
+  color: var(--accent-deep);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  border: 1.5px solid var(--mint-light);
+  line-height: 1.4;
+}
+.ds-stepper-pill-line {
+  width: 1.5px;
+  height: 10px;
+  background: var(--mint-light);
+  flex-shrink: 0;
+}
+/* シマーオーバーレイ（ds-progressと同じ） */
+.ds-stepper-shimmer {
+  pointer-events: none;
+  position: absolute;
+  top: 38px;
+  left: 0;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-deep));
+  overflow: hidden;
+  /* transition なし：thumb と fill を完全同期させるため */
+}
+.ds-stepper-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent);
+  animation: barShimmer 2s ease-in-out infinite;
+}
+
+/* ピル無しバージョン（.ds-stepper-wrap--no-pill を付与） */
+.ds-stepper-wrap--no-pill .ds-stepper-shimmer {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* サム：白抜き＋深緑リング */
+.ds-stepper-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  display: block;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    transparent var(--pct, 0%),
+    var(--mint-light) var(--pct, 0%),
+    var(--mint-light) 100%
+  );
+}
+.ds-stepper-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2.5px solid var(--accent-deep);
+  box-shadow: 0 1px 6px rgba(74, 140, 111, 0.18);
+  transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  cursor: grab;
+}
+.ds-stepper-range::-webkit-slider-thumb:hover { transform: scale(1.2); }
+.ds-stepper-range::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2.5px solid var(--accent-deep);
+  box-shadow: 0 1px 6px rgba(74, 140, 111, 0.18);
+  cursor: grab;
+}
+
+/* ══════════════════════════════════════════
+   ② ds-warning-inline
+   オレンジ系インライン警告ボックス
+══════════════════════════════════════════ */
+.ds-warning-inline {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 14px;
+  background: rgba(224,122,58,0.08);
+  border-radius: 10px;
+  font-size: 12px; color: var(--warn-color);
+  line-height: 1.7; letter-spacing: 0.04em;
+}
+.ds-warning-inline .wi-icon { flex-shrink: 0; font-size: 15px; margin-top: 1px; }
+
+/* ══════════════════════════════════════════
+   ③ ds-select-underline
+   アンダーラインスタイルのセレクトボックス
+══════════════════════════════════════════ */
+.ds-select-row { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+.ds-select-underline {
+  font-size: clamp(1.4rem, 5vw, 1.8rem); font-weight: 300;
+  color: var(--text-main);
+  font-family: 'Roboto', 'Hiragino Kaku Gothic ProN', sans-serif;
+  border: none; border-bottom: 2px solid var(--mint-light);
+  background: transparent; outline: none; cursor: pointer;
+  padding: 0 4px 4px; -webkit-appearance: none; appearance: none;
+  transition: border-color .25s ease; line-height: 1.1;
+}
+.ds-select-underline:focus { border-bottom-color: var(--accent-deep); }
+.ds-select-unit { font-size: 0.95rem; color: var(--sub-text); font-weight: 500; }
+
+/* ══════════════════════════════════════════
+   ④ ds-summary-grid / ds-stat-card
+   KPI・サマリーグリッドレイアウト
+══════════════════════════════════════════ */
+.ds-summary-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+@media (min-width: 480px) {
+  .ds-summary-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+}
+@media (max-width: 479px) {
+  .ds-summary-grid .ds-stat-card:last-child { grid-column: 1 / -1; }
+}
+.ds-stat-card {
+  background: var(--mint-pale); border-radius: 16px;
+  padding: clamp(14px, 3vw, 20px) clamp(10px, 2vw, 16px) clamp(12px, 2.5vw, 18px);
+  text-align: center; border: 1.5px solid var(--mint-light);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.ds-stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow); }
+.ds-stat-card.highlight {
+  background: linear-gradient(135deg, #f0faf6, #e8f5f1);
+  border-color: var(--accent); box-shadow: 0 4px 20px rgba(74,140,111,0.1);
+}
+.ds-stat-label {
+  font-size: clamp(0.72rem, 2.2vw, 0.85rem); color: var(--sub-text);
+  font-weight: 600; margin-bottom: clamp(6px, 1.8vw, 10px); line-height: 1.4; letter-spacing: 0.04em;
+}
+.ds-stat-value { font-family: 'Roboto', sans-serif; line-height: 1.1; }
+.ds-stat-num {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 500; color: var(--accent-deep);
+}
+.ds-stat-unit { font-size: clamp(0.85rem, 2.8vw, 1.1rem); font-weight: 400; color: var(--accent-deep); margin-left: 3px; }
+.ds-stat-detail { font-size: clamp(0.72rem, 2.3vw, 0.88rem); color: var(--sub-text); font-weight: 500; margin-top: 8px; }
+.ds-stat-detail-num {
+  font-family: 'Roboto', sans-serif; font-size: clamp(1.4rem, 5vw, 2rem);
+  font-weight: 500; color: var(--accent-deep);
+}
+.ds-stat-detail-unit {
+  font-size: clamp(0.75rem, 2.5vw, 0.95rem); font-weight: 400;
+  color: var(--accent-deep); margin-left: 1px; margin-right: 2px;
+  font-family: 'Roboto', 'Hiragino Kaku Gothic ProN', sans-serif; vertical-align: middle;
+}
+
+/* ══════════════════════════════════════════
+   ⑤ ds-chip-scroll / ds-chip
+   横スクロール可能なプリセットチップ群
+══════════════════════════════════════════ */
+.ds-chip-scroll {
+  display: flex; gap: 6px; flex-wrap: nowrap;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; min-width: 0; padding: 4px;
+}
+/* ds-val-row 内では残スペースを埋めて右端に寄せる */
+.ds-val-row .ds-chip-scroll { flex: 1 1 0; margin-left: auto; }
+.ds-chip-scroll::-webkit-scrollbar { display: none; }
+.ds-chip {
+  padding: 5px 14px;
+  border: 1.5px solid var(--mint-light); border-radius: 20px;
+  font-size: clamp(0.7rem, 2.2vw, 0.78rem); font-weight: 500;
+  font-family: inherit; color: var(--sub-text); background: transparent;
+  cursor: pointer; transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  letter-spacing: 0.04em; line-height: 1.4; white-space: nowrap; flex-shrink: 0;
+}
+.ds-chip:hover {
+  border-color: var(--accent-deep); color: var(--accent-deep);
+  background: var(--mint-pale); transform: scale(1.05);
+}
+.ds-chip:active { transform: scale(0.95); }
+.ds-chip.active {
+  background: var(--accent-deep); border-color: var(--accent-deep);
+  color: #fff; box-shadow: 0 2px 10px rgba(74,140,111,0.35);
+}
+
+/* ══════════════════════════════════════════
+   ⑥ ds-sim-chart
+   積立シミュレーション棒グラフ
+══════════════════════════════════════════ */
+.ds-chart-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+.ds-chart-li { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--sub-text); font-weight: 500; }
+.ds-chart-ld { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+.ds-chart-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 12px; }
+.ds-chart-note { font-size: 11px; color: var(--sub-text); text-align: right; margin-top: 8px; letter-spacing: 0.04em; }
+.ds-chart-tooltip {
+  position: fixed; background: #2c3a35; color: #fff;
+  border-radius: 14px; padding: 12px 16px;
+  font-size: 12px; pointer-events: none;
+  opacity: 0; transition: opacity .15s; z-index: 9999;
+  min-width: 190px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.22), 0 2px 8px rgba(74,140,111,0.2);
+  line-height: 1.8; border: 1px solid rgba(168,213,186,0.2);
+}
+.ds-chart-tooltip.show { opacity: 1; }
+.ds-chart-tooltip .tt-year  { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 3px; }
+.ds-chart-tooltip .tt-total { font-size: 14px; font-weight: 500; font-family: 'Roboto', sans-serif; margin-bottom: 2px; }
+.ds-chart-tooltip .tt-row   { display: flex; align-items: center; gap: 8px; }
+.ds-chart-tooltip .tt-dot   { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.ds-chart-tooltip .tt-sep   { border-top: 1px solid rgba(255,255,255,0.12); margin: 4px 0; }
+
+/* ══════════════════════════════════════════
+   back-to-index
+   マネーツール一覧へ戻るボタン（各シミュレーター下部）
+══════════════════════════════════════════ */
+.back-to-index { margin-top: 24px; text-align: center; }
+.back-to-index a {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px;
+  background: var(--mint-pale); border: 1px solid var(--mint-light);
+  border-radius: 12px; color: var(--accent-deep);
+  text-decoration: none; font-size: 14px; font-weight: 500;
+  transition: background 0.2s, border-color 0.2s;
+}
+.back-to-index a:hover { background: #fff; border-color: var(--accent); }
+
+/* ══════════════════════════════════════════
+   ds-hero-result
+   手取りヒーローカード（グラデーション背景）
+══════════════════════════════════════════ */
+.ds-hero-result {
+  background: linear-gradient(135deg, #5aaa8e 0%, #6ec4a8 100%);
+  border-radius: 20px;
+  padding: 24px 24px 20px;
+  color: #fff;
+  box-shadow: 0 4px 22px rgba(74,140,111,0.22);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.ds-hero-result .hero-eyebrow {
+  font-size: clamp(0.72rem, 2.2vw, 0.85rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+  margin-bottom: 4px;
+}
+.ds-hero-result .hero-amount {
+  font-family: 'Roboto', sans-serif;
+  font-size: clamp(2.2rem, 7vw, 3rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+}
+.ds-hero-result .hero-amount-unit {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  font-weight: 400;
+}
+.ds-hero-result .hero-sub {
+  margin-top: 14px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ds-hero-result .hero-sub-value {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════════
+   ds-breakdown-accordion
+   社会保険料・税金の内訳アコーディオン
+══════════════════════════════════════════ */
+.ds-breakdown-block {
+  background: var(--card-bg);
+  border: 1.5px solid var(--mint-light);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.ds-breakdown-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--card-bg);
+  font-size: clamp(0.82rem, 2.4vw, 0.92rem);
+  font-weight: 700;
+  color: var(--text-main);
+  border-bottom: 1.5px solid var(--mint-light);
+}
+.ds-accordion-trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 18px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--mint-light);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+.ds-accordion-trigger:hover {
+  background: var(--mint-pale);
+}
+.ds-accordion-trigger .acc-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(0.75rem, 2.2vw, 0.85rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--sub-text);
+  text-transform: uppercase;
+}
+.ds-accordion-trigger .acc-toggle-label {
+  font-size: 10px;
+  background: var(--mint-pale);
+  border: 1px solid var(--mint-light);
+  color: var(--accent-deep);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  transition: background 0.2s;
+}
+.ds-accordion-trigger[aria-expanded="true"] .acc-toggle-label {
+  background: var(--mint-light);
+}
+.ds-accordion-trigger .acc-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-family: 'Roboto', sans-serif;
+  font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+  font-weight: 500;
+  color: var(--sub-text);
+  text-align: right;
+}
+.acc-resident-hint {
+  font-size: 10px;
+  color: var(--warn-color);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+}
+.ds-accordion-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+  background: #fafcfb;
+}
+.ds-accordion-body.open {
+  max-height: 400px;
+}
+.ds-accordion-body .breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 18px;
+  font-size: clamp(0.78rem, 2.3vw, 0.88rem);
+  border-bottom: 1px solid var(--mint-light);
+}
+.ds-accordion-body .breakdown-row .breakdown-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sub-text);
+}
+.ds-accordion-body .breakdown-row .breakdown-label::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.ds-accordion-body .breakdown-row.color-health .breakdown-label::before { background: var(--data-blue-2); }
+.ds-accordion-body .breakdown-row.color-care .breakdown-label::before { background: var(--data-blue-2); }
+.ds-accordion-body .breakdown-row.color-pension .breakdown-label::before { background: var(--data-blue-1); }
+.ds-accordion-body .breakdown-row.color-employ .breakdown-label::before { background: var(--data-blue-3); }
+.ds-accordion-body .breakdown-row.color-income .breakdown-label::before { background: var(--data-orange); }
+.ds-accordion-body .breakdown-row.color-resident .breakdown-label::before { background: var(--data-amber); }
+.ds-accordion-body .breakdown-row .breakdown-value {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  color: var(--sub-text);
+  text-align: right;
+}
+.ds-accordion-body .breakdown-row:last-child {
+  border-bottom: none;
+}
+.ds-breakdown-subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 18px;
+  font-size: clamp(0.8rem, 2.3vw, 0.9rem);
+  font-weight: 600;
+  color: var(--sub-text);
+  border-top: 1px solid var(--mint-light);
+}
+.ds-breakdown-takehome {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  font-size: clamp(0.88rem, 2.5vw, 1rem);
+  font-weight: 700;
+  color: var(--text-main);
+}
+.ds-breakdown-takehome .takehome-value {
+  font-family: 'Roboto', sans-serif;
+  font-size: clamp(1rem, 3vw, 1.2rem);
+  font-weight: 500;
+  color: var(--accent-deep);
+}
+
+/* ══════════════════════════════════════════
+   ds-donut-summary
+   ドーナツグラフ＋内訳を横並びにしたカード
+══════════════════════════════════════════ */
+.ds-donut-summary {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 20px;
+  background: var(--mint-pale);
+  border: 1.5px solid var(--mint-light);
+  border-radius: 16px;
+}
+.ds-donut-summary .donut-canvas-wrap {
+  flex-shrink: 0;
+  width: clamp(90px, 22vw, 120px);
+  aspect-ratio: 1;
+  position: relative;
+}
+.ds-donut-summary .donut-legend {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ds-donut-summary .donut-legend-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--placeholder);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+.ds-donut-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(0.72rem, 2vw, 0.82rem);
+}
+.ds-donut-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.ds-donut-legend-name {
+  flex: 1;
+  color: var(--sub-text);
+}
+.ds-donut-legend-val {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  color: var(--text-main);
+  text-align: right;
+}
+.ds-donut-legend-pct {
+  font-size: 10px;
+  color: var(--placeholder);
+  margin-left: 3px;
+}
+
+/* ══════════════════════════════════════════
+   ds-resident-savings
+   住民税取り置きブロック（翌年払い注意）
+   住民税を計算から外すON時に表示
+══════════════════════════════════════════ */
+.ds-resident-savings {
+  display: none;                          /* JSでshow/hide */
+  background: rgba(224,122,58,0.07);
+  border: 1.5px solid rgba(224,122,58,0.25);
+  border-radius: 16px;
+  padding: 16px 18px;
+  animation: fadeInUp 0.3s cubic-bezier(0.22,0.61,0.36,1) both;
+}
+.ds-resident-savings.visible {
+  display: block;
+}
+
+/* ヘッダー行 */
+.drs-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.drs-header-icon { font-size: 16px; }
+.drs-header-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--warn-color);
+  letter-spacing: 0.04em;
+  flex: 1;
+}
+.drs-badge {
+  font-size: 10px;
+  background: rgba(224,122,58,0.12);
+  color: var(--warn-color);
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* 月額→年額カード行 */
+.drs-amounts {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 14px;
+}
+.drs-amount-card {
+  flex: 1;
+  background: rgba(255,255,255,0.7);
+  border-radius: 12px;
+  padding: 11px 13px;
+  border: 1px solid rgba(224,122,58,0.22);
+}
+.drs-amount-card.annual {
+  background: rgba(224,122,58,0.1);
+  border-color: rgba(224,122,58,0.3);
+  border-width: 1.5px;
+}
+.drs-amount-label {
+  font-size: 10px;
+  color: var(--warn-color);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+.drs-amount-value {
+  font-family: 'Roboto', sans-serif;
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-weight: 300;
+  color: var(--text-main);
+  line-height: 1.1;
+}
+.drs-amount-card.annual .drs-amount-value {
+  font-weight: 500;
+  color: var(--warn-color);
+}
+.drs-amount-unit {
+  font-family: 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: 12px;
+  color: var(--sub-text);
+  margin-left: 2px;
+}
+.drs-amount-card.annual .drs-amount-unit {
+  color: var(--warn-color);
+  opacity: 0.8;
+}
+.drs-arrow {
+  padding: 0 10px;
+  font-size: 16px;
+  color: rgba(224,122,58,0.35);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* プログレスバー */
+.drs-bar-wrap {
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.drs-bar-track {
+  flex: 1;
+  min-width: 0;
+}
+.drs-bar-bg {
+  height: 14px;
+  background: rgba(224,122,58,0.12);
+  border-radius: 7px;
+  overflow: hidden;
+}
+.drs-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(224,122,58,0.55), var(--warn-color));
+  border-radius: 7px;
+  transition: width 0.7s cubic-bezier(0.22,0.61,0.36,1);
+  position: relative;
+  overflow: hidden;
+}
+.drs-bar-fill::after {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  animation: barShimmer 2s ease-in-out infinite;
+}
+.drs-bar-pct {
+  font-size: 11px;
+  color: var(--warn-color);
+  font-weight: 600;
+  opacity: 0.9;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 注記 */
+.drs-note {
+  font-size: 11px;
+  color: var(--sub-text);
+  line-height: 1.75;
+  border-top: 1px dashed rgba(224,122,58,0.25);
+  padding-top: 10px;
+  margin-top: 8px;
+  letter-spacing: 0.03em;
+}
+
+/* ══════════════════════════════════════════
+   ds-period-strip
+   内訳ブロック上部 月間／年間 切り替えストリップ
+══════════════════════════════════════════ */
+.ds-period-strip {
+  display: flex;
+  border-bottom: 1.5px solid var(--mint-light);
+  overflow: hidden;
+  border-radius: 16px 16px 0 0;
+  background: var(--mint-pale);
+}
+.ds-period-strip-btn {
+  flex: 1;
+  padding: 10px 0;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  position: relative;
+  background: transparent;
+  color: var(--sub-text);
+  transition: color 0.2s ease;
+}
+.ds-period-strip-btn.active {
+  color: var(--accent-deep);
+}
+/* アクティブのアンダーライン */
+.ds-period-strip-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: var(--accent-deep);
+  transition: width 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ds-period-strip-btn.active::after {
+  width: 40px;
+}
+/* ボタン間の区切り線 */
+.ds-period-strip-btn:not(:last-child) {
+  border-right: 1px solid var(--mint-light);
+}
+
+/* 金額切り替えアニメーション */
+.bd-amount {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  display: inline-block;
+}
+.ds-breakdown-block.period-switching .bd-amount {
+  opacity: 0;
+  transform: translateY(3px);
+}
+
+/* ══════════════════════════════════════════
+   ds-work-fields
+   稼働条件（時間/日・日数/月・交通費）横並びグリッド
+══════════════════════════════════════════ */
+.ds-work-fields {
+  display: grid;
+  grid-template-columns: 1fr 0.4fr 1fr 0.4fr 1.8fr 0.4fr;
+  align-items: end;
+  column-gap: 12px;
+  row-gap: 8px;
+}
+.ds-work-fields .ds-input-underline {
+  font-family: 'Roboto', 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: clamp(1.1rem, 3.5vw, 1.4rem);
+  font-weight: 500;
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid var(--mint-light);
+  background: transparent;
+  padding: 4px 0 6px;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.2s ease;
+  -moz-appearance: textfield;
+}
+.ds-work-fields .ds-input-underline:focus {
+  border-bottom-color: var(--accent-deep);
+}
+.ds-work-fields .ds-input-underline::-webkit-outer-spin-button,
+.ds-work-fields .ds-input-underline::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.ds-work-fields .field-label {
+  font-size: clamp(0.68rem, 2vw, 0.76rem);
+  font-weight: 600;
+  color: var(--sub-text);
+  white-space: nowrap;
+}
+.ds-work-fields .field-unit {
+  font-size: clamp(0.82rem, 2.4vw, 0.95rem);
+  color: var(--sub-text);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  /* ── 稼働条件グリッド：幅を絞り交通費のみ広く ── */
+  .ds-work-fields {
+    grid-template-columns: 44px auto 44px auto 80px auto;
+    align-items: end;
+    column-gap: 6px;
+    row-gap: 0;
+  }
+
+  /* ── 稼働条件の入力欄フォントサイズを1段階アップ ── */
+  .ds-work-fields .ds-input-underline {
+    font-size: 22px;
+  }
+}

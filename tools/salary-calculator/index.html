@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>給与・手取り計算シミュレーター</title>
+<link rel="stylesheet" href="../../shared/components.css">
+<script src="../../shared/base.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* ══════════════════════════════════════════
+   給与シミュレーター固有スタイル
+══════════════════════════════════════════ */
+:root { --card-px: 20px; }
+@media (min-width: 600px) { :root { --card-px: 28px; } }
+
+body {
+  font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', 'Hiragino Sans', sans-serif;
+  background: var(--base-bg);
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(168,213,186,0.18) 0%, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(74,140,111,0.07) 0%, transparent 45%);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding: 20px 16px 48px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+@media (min-width: 640px) { body { padding: 36px 24px 60px; } }
+
+/* ── ヘッダー ── */
+header {
+  margin-bottom: clamp(20px, 4vw, 32px);
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.header-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--mint-pale); border: 1px solid var(--mint-light);
+  color: var(--accent-deep); font-size: 11px; font-family: 'Roboto Mono', monospace;
+  padding: 3px 12px; border-radius: 20px; margin-bottom: 12px;
+  font-weight: 500; letter-spacing: 0.08em;
+}
+header h1 {
+  font-size: clamp(1.3rem, 5vw, 1.9rem); font-weight: 700;
+  color: var(--text-main); letter-spacing: 0.04em; margin-bottom: 6px;
+}
+header p { font-size: clamp(0.75rem, 2.3vw, 0.88rem); color: var(--sub-text); line-height: 1.7; }
+
+/* ── カード共通 ── */
+.ds-card { padding: 24px var(--card-px) 28px; margin-bottom: 16px; }
+@media (min-width: 600px) { .ds-card { padding: 28px var(--card-px); margin-bottom: 20px; } }
+.ds-card { animation: secFadeIn 0.4s cubic-bezier(0.22,0.61,0.36,1) both; }
+.ds-card:nth-child(1) { animation-delay: 0.04s; }
+.ds-card:nth-child(2) { animation-delay: 0.1s; }
+
+.card-label {
+  font-size: clamp(0.65rem, 1.9vw, 0.75rem); font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--placeholder); margin-bottom: clamp(16px, 3vw, 22px);
+  display: flex; align-items: center; gap: 8px;
+}
+.card-label::before {
+  content: ''; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent-deep); flex-shrink: 0;
+}
+.ds-divider { margin: 14px 0; }
+
+/* ══════════════════════════════════════════
+   入力エリア
+══════════════════════════════════════════ */
+.input-list { display: flex; flex-direction: column; }
+
+.input-group { display: flex; flex-direction: column; gap: 10px; }
+.input-group-label {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  font-size: clamp(0.9rem, 2.7vw, 1rem); font-weight: 600; color: var(--text-main);
+}
+.input-group-sub {
+  font-size: clamp(0.65rem, 2vw, 0.73rem); color: var(--sub-text); font-weight: 400;
+}
+
+/* 数値入力フィールド */
+.input-field-row { display: flex; align-items: center; gap: 10px; }
+.num-input {
+  font-family: 'Roboto', 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: clamp(1.5rem, 4.5vw, 1.9rem);
+  font-weight: 500;
+  flex: 1; max-width: 200px;
+  background: var(--mint-pale);
+  border: 1.5px solid var(--mint-light);
+  border-radius: 12px;
+  padding: 9px 14px;
+  color: var(--text-main);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -moz-appearance: textfield;
+}
+.num-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(168,213,186,0.25);
+}
+.num-input::-webkit-outer-spin-button,
+.num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.num-unit {
+  font-size: clamp(0.82rem, 2.4vw, 0.95rem); color: var(--sub-text); white-space: nowrap;
+}
+
+/* 時給入力：アンダーラインスタイル（他入力欄とフォントウェイト統一） */
+.hourly-rate-input {
+  font-family: 'Roboto', 'Hiragino Kaku Gothic ProN', sans-serif;
+  font-size: clamp(1.4rem, 5vw, 1.8rem);
+  font-weight: 500;
+  color: var(--text-main);
+  border: none;
+  border-bottom: 2px solid var(--mint-light);
+  background: transparent;
+  outline: none;
+  padding: 0 4px 4px;
+  width: 100px;
+  -moz-appearance: textfield;
+  transition: border-color 0.25s ease;
+  line-height: 1.1;
+}
+.hourly-rate-input:focus { border-bottom-color: var(--accent-deep); }
+.hourly-rate-input::-webkit-outer-spin-button,
+.hourly-rate-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* 年齢行：ラベル幅をコンパクトに */
+.age-row { --form-label-w: 72px; }
+
+/* ── トグルスイッチ ── */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; user-select: none; gap: 12px;
+}
+.toggle-row-label { font-size: clamp(0.88rem, 2.6vw, 0.98rem); font-weight: 600; color: var(--text-main); flex: 1; }
+.toggle-row-sub   { font-size: clamp(0.65rem, 1.9vw, 0.72rem); color: var(--sub-text); margin-top: 3px; }
+.toggle-row input[type="checkbox"] { display: none; }
+.toggle-switch {
+  flex-shrink: 0; width: 46px; height: 26px; border-radius: 13px;
+  background: var(--mint-light); position: relative; transition: background 0.25s ease;
+}
+.toggle-switch::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  transition: transform 0.25s cubic-bezier(0.22,0.61,0.36,1);
+}
+.toggle-row input:checked + .toggle-switch { background: var(--accent-deep); }
+.toggle-row input:checked + .toggle-switch::after { transform: translateX(20px); }
+.toggle-row:has(input:disabled) { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+
+.chart-note { font-size: clamp(0.58rem, 1.7vw, 0.63rem); color: var(--sub-text); line-height: 1.8; }
+
+/* 結果カラム：条件設定と同じカード背景・カード間余白14px・全幅 */
+.result-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.result-col > .ds-hero-result,
+.result-col > .ds-summary-grid,
+.result-col > .ds-breakdown-block,
+.result-col > .ds-resident-savings,
+.result-col > .ds-donut-summary {
+  margin-top: 14px;
+}
+.result-col > .ds-hero-result { margin-top: 0; }
+.result-col {
+  background: var(--card-bg);
+  border-radius: 28px;
+  padding: 24px var(--card-px) 28px;
+  box-shadow: 0 8px 40px var(--shadow), 0 1px 4px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8);
+  position: relative;
+  overflow: hidden;
+}
+.result-col::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-deep), var(--accent));
+  background-size: 200%;
+  animation: shimmerBar 3s linear infinite;
+  border-radius: 28px 28px 0 0;
+}
+.result-col .ds-hero-result {
+  text-align: center;
+}
+.result-col .ds-hero-result .hero-amount {
+  justify-content: center;
+}
+.result-col .ds-hero-result,
+.result-col .ds-summary-grid,
+.result-col .ds-breakdown-block,
+.result-col .ds-donut-summary {
+  margin-bottom: 0;
+}
+/* 月間手取り（目安）の項目名フォントサイズを月間総支給（額面）と同じに */
+.result-col .ds-hero-result .hero-eyebrow {
+  font-size: clamp(0.72rem, 2.2vw, 0.85rem);
+}
+.result-col .ds-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+/* モバイルでも月間総支給・手取り年収を1行2カラムに（last-childの全幅を解除） */
+@media (max-width: 479px) {
+  .result-col .ds-summary-grid .ds-stat-card:last-child { grid-column: auto; }
+}
+.result-col .ds-breakdown-block,
+.result-col .ds-donut-summary {
+  width: 100%;
+}
+
+/* ══════════════════════════════════════════
+   2カラムページレイアウト（PC）
+   align-items: stretch で左右の高さを揃える
+══════════════════════════════════════════ */
+@media (min-width: 800px) {
+  body { max-width: 1020px; }
+
+  .page-cols {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 20px;
+    align-items: stretch;          /* 左右の高さを揃える */
+  }
+
+  /* 入力カードを左列の中でスティッキーに */
+  .input-col { position: relative; }
+  .input-col .ds-card {
+    position: sticky; top: 24px;
+    margin-bottom: 0;
+  }
+
+  /* 左列の数値入力をコンパクトに */
+  .input-col .num-input { font-size: 1.6rem; }
+}
+
+/* ── 免責 ── */
+.disclaimer {
+  margin-top: 12px; padding: 14px 18px;
+  background: rgba(168,213,186,0.08); border-left: 3px solid var(--accent);
+  border-radius: 12px; font-size: clamp(0.58rem, 1.8vw, 0.65rem);
+  color: var(--sub-text); line-height: 1.8; letter-spacing: 0.04em;
+}
+@media (min-width: 600px) { .disclaimer { padding: 16px 22px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">💼 給与シミュレーター</div>
+  <h1>給与・手取り計算シミュレーター</h1>
+  <p>社会保険料・所得税・住民税を考慮した実質手取りを試算します</p>
+</header>
+
+<div class="page-cols">
+
+  <!-- ── 入力カード ── -->
+  <div class="input-col">
+  <div class="ds-card">
+    <div class="card-label">条件設定</div>
+    <div class="input-list">
+
+      <!-- 時給 -->
+      <div class="input-group">
+        <div class="input-group-label">時給</div>
+        <div class="ds-select-row">
+          <input type="number" class="hourly-rate-input" id="hourlyRate"
+            min="0" max="10000" step="10" value="1600">
+          <span class="ds-select-unit">円</span>
+        </div>
+        <div class="ds-chip-scroll hourly-chips" style="margin-top:10px;">
+          <button type="button" class="ds-chip" data-rate="1400">1,400円</button>
+          <button type="button" class="ds-chip" data-rate="1500">1,500円</button>
+          <button type="button" class="ds-chip active" data-rate="1600">1,600円</button>
+          <button type="button" class="ds-chip" data-rate="1700">1,700円</button>
+          <button type="button" class="ds-chip" data-rate="1800">1,800円</button>
+        </div>
+      </div>
+
+      <hr class="ds-divider">
+
+      <!-- 稼働条件・交通費（6カラムグリッド） -->
+      <div class="input-group">
+        <div class="input-group-label">
+          稼働条件・交通費
+          <span class="input-group-sub">1日の時間・月の日数・交通費等（月額）</span>
+        </div>
+        <div class="ds-work-fields">
+          <!-- ラベル行 -->
+          <div class="field-label" style="grid-column:1;">時間/日</div>
+          <div style="grid-column:2;"></div>
+          <div class="field-label" style="grid-column:3;">日数/月</div>
+          <div style="grid-column:4;"></div>
+          <div class="field-label" style="grid-column:5;">交通費</div>
+          <div style="grid-column:6;"></div>
+
+          <!-- 入力行 -->
+          <input type="number" class="ds-input-underline"
+            id="hoursPerDay" value="8" min="0" max="24" step="0.5"
+            style="grid-column:1;">
+          <span class="field-unit" style="grid-column:2; padding-bottom:6px;">h</span>
+
+          <input type="number" class="ds-input-underline"
+            id="daysPerMonth" value="20" min="0" max="31" step="1"
+            style="grid-column:3;">
+          <span class="field-unit" style="grid-column:4; padding-bottom:6px;">日</span>
+
+          <input type="number" class="ds-input-underline"
+            id="allowance" value="0" min="0" max="100000" step="500"
+            style="grid-column:5;">
+          <span class="field-unit" style="grid-column:6; padding-bottom:6px;">円</span>
+        </div>
+      </div>
+
+      <hr class="ds-divider">
+
+      <!-- 年齢 -->
+      <div class="ds-form-row age-row">
+        <div class="ds-form-row-label">
+          <span class="lname">年齢</span>
+        </div>
+        <div class="ds-form-row-right">
+          <div class="ds-segment" id="ageSeg">
+            <button class="ds-seg-btn active" data-age="under40">40歳未満</button>
+            <button class="ds-seg-btn" data-age="over40">40〜64歳</button>
+          </div>
+        </div>
+      </div>
+
+      <hr class="ds-divider">
+
+      <!-- 住民税を計算から外す -->
+      <label class="toggle-row" for="excludeResidenceTax">
+        <div>
+          <div class="toggle-row-label">住民税を計算から外す</div>
+          <div class="toggle-row-sub">普通徴収の場合はON</div>
+        </div>
+        <input type="checkbox" id="excludeResidenceTax">
+        <span class="toggle-switch"></span>
+      </label>
+
+    </div>
+  </div>
+  </div><!-- /input-col -->
+
+  <!-- ── 結果カード ── -->
+  <div class="result-col">
+    <div class="card-label">シミュレーション結果</div>
+
+    <!-- ① ヒーロー：推定月間手取り -->
+    <div class="ds-hero-result">
+      <div class="hero-eyebrow">月間手取り（目安）</div>
+      <div class="hero-amount">
+        <span id="statTakeHome">0</span>
+        <span class="hero-amount-unit">円</span>
+      </div>
+    </div>
+
+    <!-- ② サブ指標：月間総支給・年収 -->
+    <div class="ds-summary-grid">
+      <div class="ds-stat-card">
+        <div class="ds-stat-label">月間総支給（額面）</div>
+        <div class="ds-stat-value">
+          <span class="ds-stat-num" id="statGross">0</span>
+          <span class="ds-stat-unit">円</span>
+        </div>
+      </div>
+      <div class="ds-stat-card">
+        <div class="ds-stat-label">手取り年収</div>
+        <div class="ds-stat-value">
+          <span class="ds-stat-num" id="statAnnualNet">0</span>
+          <span class="ds-stat-unit">万円</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ 内訳アコーディオン -->
+    <div class="ds-breakdown-block">
+
+      <!-- 月間／年間 切り替えストリップ -->
+      <div class="ds-period-strip">
+        <button type="button" class="ds-period-strip-btn active" id="btnPeriodMonthly"
+          onclick="setPeriod('monthly')">月間</button>
+        <button type="button" class="ds-period-strip-btn" id="btnPeriodAnnual"
+          onclick="setPeriod('annual')">年間</button>
+      </div>
+
+      <!-- 総支給ヘッダー -->
+      <div class="ds-breakdown-header-row">
+        <span id="bdPeriodLabel">月間総支給（額面）</span>
+        <span class="bd-amount" id="bdGross">¥ 0</span>
+      </div>
+
+      <!-- 社会保険料（アコーディオン） -->
+      <button type="button"
+        class="ds-accordion-trigger"
+        id="socialAccordionBtn"
+        aria-expanded="false"
+        aria-controls="socialAccordionBody"
+        onclick="toggleAccordion('socialAccordion')"
+      >
+        <span class="acc-left">
+          社会保険料
+          <span class="acc-toggle-label" id="socialToggleLabel">▼ 内訳を見る</span>
+        </span>
+        <span class="acc-right bd-amount" id="bdSocialTotal">¥ 0</span>
+      </button>
+      <div class="ds-accordion-body" id="socialAccordionBody">
+        <div class="breakdown-row color-health">
+          <span class="breakdown-label">健康保険料（協会けんぽ東京）</span>
+          <span class="breakdown-value bd-amount" id="bdHealth">¥ 0</span>
+        </div>
+        <div class="breakdown-row color-care" id="bdCareRow">
+          <span class="breakdown-label">介護保険料</span>
+          <span class="breakdown-value bd-amount" id="bdCare">¥ 0</span>
+        </div>
+        <div class="breakdown-row color-pension">
+          <span class="breakdown-label">厚生年金保険料</span>
+          <span class="breakdown-value bd-amount" id="bdPension">¥ 0</span>
+        </div>
+        <div class="breakdown-row color-employ">
+          <span class="breakdown-label">雇用保険料</span>
+          <span class="breakdown-value bd-amount" id="bdEmployment">¥ 0</span>
+        </div>
+      </div>
+
+      <!-- 税金（アコーディオン） -->
+      <button type="button"
+        class="ds-accordion-trigger"
+        id="taxAccordionBtn"
+        aria-expanded="false"
+        aria-controls="taxAccordionBody"
+        onclick="toggleAccordion('taxAccordion')"
+      >
+        <span class="acc-left">
+          税金
+          <span class="acc-toggle-label" id="taxToggleLabel">▼ 内訳を見る</span>
+        </span>
+        <span class="acc-right">
+          <span class="bd-amount" id="bdTaxTotal">¥ 0</span>
+          <span class="acc-resident-hint" id="accResidentHint" style="display:none;">住民税は下記参照</span>
+        </span>
+      </button>
+      <div class="ds-accordion-body" id="taxAccordionBody">
+        <div class="breakdown-row color-income">
+          <span class="breakdown-label">所得税（復興特別税含む）</span>
+          <span class="breakdown-value bd-amount" id="bdIncomeTax">¥ 0</span>
+        </div>
+        <div class="breakdown-row color-resident" id="bdResidenceTaxRow">
+          <span class="breakdown-label">住民税（推定）</span>
+          <span class="breakdown-value bd-amount" id="bdResidenceTax">¥ 0</span>
+        </div>
+      </div>
+
+      <!-- 手取り額 -->
+      <div class="ds-breakdown-takehome">
+        <span id="bdTakeHomeLabel">月間手取り額</span>
+        <span class="takehome-value bd-amount" id="flowTakeHome">¥ 0</span>
+      </div>
+    </div>
+
+  <!-- 住民税取り置きブロック（住民税を計算から外すON時のみ表示） -->
+  <div class="ds-resident-savings" id="residentSavingsBlock">
+    <div class="drs-header">
+      <span class="drs-header-icon">🍃</span>
+      <span class="drs-header-title">住民税の取り置き目安</span>
+      <span class="drs-badge">翌年払い</span>
+    </div>
+
+    <div class="drs-amounts">
+      <div class="drs-amount-card">
+        <div class="drs-amount-label">毎月の取り置き</div>
+        <div>
+          <span class="drs-amount-value" id="drsSavingsMonthly">0</span>
+          <span class="drs-amount-unit">円/月</span>
+        </div>
+      </div>
+      <div class="drs-arrow">→</div>
+      <div class="drs-amount-card annual">
+        <div class="drs-amount-label">年間合計</div>
+        <div>
+          <span class="drs-amount-value" id="drsSavingsAnnual">0</span>
+          <span class="drs-amount-unit">円</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="drs-bar-wrap">
+      <div class="drs-bar-track">
+        <div class="drs-bar-bg">
+          <div class="drs-bar-fill" id="drsSavingsBar" style="width:0%;"></div>
+        </div>
+      </div>
+      <div class="drs-bar-pct" id="drsSavingsPct">0%</div>
+    </div>
+
+    <div class="drs-note">
+      ※ 住民税は前年所得をもとに計算され、翌年6月〜翌々年5月に徴収されます（普通徴収の場合）
+    </div>
+  </div>
+
+    <!-- ④ ドーナツグラフ＋内訳 -->
+    <div class="ds-donut-summary">
+      <div class="donut-canvas-wrap">
+        <canvas id="resultChart"></canvas>
+      </div>
+      <div class="donut-legend">
+        <div class="donut-legend-label">給与の内訳</div>
+        <div class="ds-donut-legend-row">
+          <div class="ds-donut-legend-dot" style="background:#a8d5ba;"></div>
+          <span class="ds-donut-legend-name">手取り</span>
+          <span class="ds-donut-legend-val" id="legendTakeHome">¥ 0</span>
+          <span class="ds-donut-legend-pct" id="legendTakeHomePct"></span>
+        </div>
+        <div class="ds-donut-legend-row">
+          <div class="ds-donut-legend-dot" style="background:#4a7fd4;"></div>
+          <span class="ds-donut-legend-name">社会保険料</span>
+          <span class="ds-donut-legend-val" id="legendSocial">¥ 0</span>
+          <span class="ds-donut-legend-pct" id="legendSocialPct"></span>
+        </div>
+        <div class="ds-donut-legend-row">
+          <div class="ds-donut-legend-dot" style="background:#e07a3a;"></div>
+          <span class="ds-donut-legend-name">税金</span>
+          <span class="ds-donut-legend-val" id="legendTax">¥ 0</span>
+          <span class="ds-donut-legend-pct" id="legendTaxPct"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 注釈 -->
+    <div class="chart-note" style="margin-top:12px; text-align:left;">
+      <p>※ 協会けんぽ（東京）令和5年度料率基準　※ 住民税は課税所得の約10%で簡易計算　※ 所得税は復興特別税を含む簡易計算</p>
+    </div>
+
+  </div><!-- /result-col -->
+
+</div><!-- /page-cols -->
+
+<div class="disclaimer">
+  <p>本シミュレーターは参考値の試算です。実際の保険料・税額は標準報酬月額の等級・加入する健康保険組合・自治体等によって異なります。税務・社会保険の詳細はご自身でご確認ください。</p>
+</div>
+
+<div class="back-to-index">
+  <a href="../../index.html">← マネーツールへ戻る</a>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   給与・手取りシミュレーター
+══════════════════════════════════════════ */
+
+let ageCategory   = 'under40';
+let currentPeriod = 'monthly'; // 'monthly' | 'annual'
+let chart         = null;
+const _prev       = {};
+const _prevBd     = {}; // 内訳ブロックの前回表示値（animateNum用）
+
+/* アコーディオン開閉 */
+function toggleAccordion(id) {
+  const body    = document.getElementById(id + 'Body');
+  const btn     = document.getElementById(id + 'Btn');
+  const label   = document.getElementById(id === 'socialAccordion' ? 'socialToggleLabel' : 'taxToggleLabel');
+  const isOpen  = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  btn.setAttribute('aria-expanded', String(!isOpen));
+  label.textContent = isOpen ? '▼ 内訳を見る' : '▲ 閉じる';
+}
+
+function stdRemuneration(amount) {
+  if (amount < 63000)   return 58000;
+  if (amount >= 635000) return 650000;
+  return Math.round(amount / 10000) * 10000;
+}
+
+/* ── 月間／年間 切り替え ── */
+function setPeriod(period) {
+  currentPeriod = period;
+
+  // ストリップボタンのアクティブ状態を更新
+  document.getElementById('btnPeriodMonthly').classList.toggle('active', period === 'monthly');
+  document.getElementById('btnPeriodAnnual').classList.toggle('active', period === 'annual');
+
+  // 総支給・手取り額のラベルを更新
+  const periodLabel = document.getElementById('bdPeriodLabel');
+  if (periodLabel) {
+    periodLabel.textContent = period === 'monthly' ? '月間総支給（額面）' : '年間総支給（額面）';
+  }
+  const takeHomeLabel = document.getElementById('bdTakeHomeLabel');
+  if (takeHomeLabel) {
+    takeHomeLabel.textContent = period === 'monthly' ? '月間手取り額' : '年間手取り額';
+  }
+
+  // フェードアウト → 再計算 → フェードイン
+  const block = document.querySelector('.ds-breakdown-block');
+  if (block) {
+    block.classList.add('period-switching');
+    setTimeout(() => {
+      calculate();
+      block.classList.remove('period-switching');
+    }, 150);
+  } else {
+    calculate();
+  }
+}
+
+function calculate() {
+  const hourly     = parseFloat(document.getElementById('hourlyRate').value)   || 0;
+  const hours      = parseFloat(document.getElementById('hoursPerDay').value)   || 0;
+  const days       = parseFloat(document.getElementById('daysPerMonth').value)  || 0;
+  const allowance  = parseFloat(document.getElementById('allowance').value)    || 0;
+  const shouldDed  = true;
+  const excludeRes = document.getElementById('excludeResidenceTax').checked;
+  const isOver40   = ageCategory === 'over40';
+
+  const gross    = hourly * hours * days + allowance;
+  const stdGross = stdRemuneration(gross);
+
+  let health = 0, care = 0, pension = 0, employment = 0;
+  let incomeTax = 0, residenceTax = 0;
+
+  if (shouldDed && gross > 0) {
+    health        = Math.floor(stdGross * 0.04905);
+    care          = isOver40 ? Math.floor(stdGross * 0.0091) : 0;
+    pension       = Math.floor(stdGross * 0.0915);
+    employment    = Math.floor(gross * 0.006);
+
+    const annualGross  = gross * 12;
+    const annualSocial = (health + care + pension + employment) * 12;
+    const taxableBase  = Math.max(0, annualGross - annualSocial - 1_030_000);
+    incomeTax    = Math.floor((taxableBase * 0.05) / 12);
+    residenceTax = Math.floor((taxableBase * 0.10) / 12);
+  }
+
+  const socialTotal    = health + care + pension + employment;
+  const takeHomeDeduct = excludeRes ? incomeTax : (incomeTax + residenceTax);
+  const takeHome       = Math.max(0, gross - socialTotal - takeHomeDeduct);
+  const annualNet      = Math.round(takeHome * 12 / 10000);
+  const taxDisplayTotal = excludeRes ? incomeTax : (incomeTax + residenceTax);
+
+  /* ── サマリーアニメーション ── */
+  const animStat = (id, val) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const from = _prev[id] ?? 0;
+    animateNum(el, from, val, 600, v => Math.round(v).toLocaleString('ja-JP'));
+    _prev[id] = val;
+  };
+  animStat('statTakeHome',  takeHome);
+  animStat('statGross',     gross);
+  animStat('statAnnualNet', annualNet);
+
+  document.getElementById('excludeResidenceTax').disabled = !shouldDed;
+
+  /* ── 住民税取り置きブロック ── */
+  const savingsBlock = document.getElementById('residentSavingsBlock');
+  if (savingsBlock) {
+    const show = excludeRes && shouldDed && residenceTax > 0;
+    savingsBlock.classList.toggle('visible', show);
+
+    if (show) {
+      const annualResident = residenceTax * 12;
+      const pct = takeHome > 0
+        ? Math.min(100, Math.round((residenceTax / takeHome) * 1000) / 10)
+        : 0;
+      const barW = Math.min(100, Math.round((residenceTax / takeHome) * 100));
+
+      document.getElementById('drsSavingsMonthly').textContent =
+        residenceTax.toLocaleString('ja-JP');
+      document.getElementById('drsSavingsAnnual').textContent =
+        annualResident.toLocaleString('ja-JP');
+      document.getElementById('drsSavingsBar').style.width = barW + '%';
+      document.getElementById('drsSavingsPct').textContent = pct + '%';
+    }
+  }
+
+  /* ── 税金アコーディオンの「住民税は下記参照」ヒント ── */
+  const residentHint = document.getElementById('accResidentHint');
+  if (residentHint) {
+    residentHint.style.display =
+      (excludeRes && shouldDed && residenceTax > 0) ? 'block' : 'none';
+  }
+
+  /* ── 内訳テキスト（月間／年間対応・カウントアップアニメーション） ── */
+  const multiplier = currentPeriod === 'annual' ? 12 : 1;
+  const fmtYenBd   = n => '¥\u00a0' + Math.round(n).toLocaleString('ja-JP');
+
+  const animBd = (id, toVal) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const from = _prevBd[id] ?? 0;
+    animateNum(el, from, toVal, 600, fmtYenBd);
+    _prevBd[id] = toVal;
+  };
+
+  animBd('bdGross',        gross * multiplier);
+  animBd('bdHealth',       health * multiplier);
+  animBd('bdCare',         care * multiplier);
+  animBd('bdPension',      pension * multiplier);
+  animBd('bdEmployment',   employment * multiplier);
+  animBd('bdSocialTotal',  socialTotal * multiplier);
+  animBd('bdIncomeTax',    incomeTax * multiplier);
+  animBd('bdResidenceTax', residenceTax * multiplier);
+  animBd('bdTaxTotal',     taxDisplayTotal * multiplier);
+  animBd('flowTakeHome',   takeHome * multiplier);
+  document.getElementById('bdCareRow').style.display   = isOver40 ? '' : 'none';
+
+  document.getElementById('bdResidenceTaxRow').style.display =
+    (excludeRes && shouldDed) ? 'none' : '';
+
+  /* ── ドーナツグラフ凡例（月次表示） ── */
+  const fmt = v => '¥\u00a0' + Math.round(v).toLocaleString('ja-JP');
+  const pct = (v) => gross > 0 ? Math.round(v / gross * 100) + '%' : '0%';
+  document.getElementById('legendTakeHome').textContent    = fmt(takeHome);
+  document.getElementById('legendTakeHomePct').textContent = pct(takeHome);
+  document.getElementById('legendSocial').textContent     = fmt(socialTotal);
+  document.getElementById('legendSocialPct').textContent   = pct(socialTotal);
+  document.getElementById('legendTax').textContent         = fmt(taxDisplayTotal);
+  document.getElementById('legendTaxPct').textContent      = pct(taxDisplayTotal);
+
+  updateChart(takeHome, socialTotal, taxDisplayTotal);
+}
+
+function updateChart(takeHome, socialTotal, taxTotal) {
+  const ctx  = document.getElementById('resultChart').getContext('2d');
+  const data = {
+    labels: ['手取り', '社会保険料', '税金'],
+    datasets: [{
+      data: [takeHome || 1, socialTotal, taxTotal],
+      backgroundColor:      ['#a8d5ba', '#4a7fd4', '#e07a3a'],
+      hoverBackgroundColor: ['#7ec9a0', '#3a6fc4', '#c86428'],
+      borderWidth: 0, hoverOffset: 8,
+    }]
+  };
+  if (chart) {
+    chart.data = data; chart.update('none');
+  } else {
+    chart = new Chart(ctx, {
+      type: 'doughnut', data,
+      options: {
+        maintainAspectRatio: true, cutout: '68%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => ` ${c.label}: ¥${Math.round(c.raw).toLocaleString('ja-JP')}` } }
+        }
+      }
+    });
+  }
+}
+
+/* ── イベントリスナー ── */
+['hourlyRate', 'hoursPerDay', 'daysPerMonth', 'allowance'].forEach(id =>
+  document.getElementById(id).addEventListener('input', calculate)
+);
+document.getElementById('excludeResidenceTax').addEventListener('change', calculate);
+
+document.querySelectorAll('.hourly-chips .ds-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const rate = parseInt(chip.dataset.rate, 10);
+    document.getElementById('hourlyRate').value = rate;
+    document.querySelectorAll('.hourly-chips .ds-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    calculate();
+  });
+});
+document.getElementById('hourlyRate').addEventListener('input', () => {
+  const val = parseInt(document.getElementById('hourlyRate').value, 10) || 0;
+  document.querySelectorAll('.hourly-chips .ds-chip').forEach(c => {
+    c.classList.toggle('active', parseInt(c.dataset.rate, 10) === val);
+  });
+});
+
+document.getElementById('ageSeg').addEventListener('click', e => {
+  const btn = e.target.closest('[data-age]');
+  if (!btn) return;
+  document.querySelectorAll('#ageSeg .ds-seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ageCategory = btn.dataset.age;
+  calculate();
+});
+
+initChipScroll();
+calculate();
+</script>
+</body>
+</html>
