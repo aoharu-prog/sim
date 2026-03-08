@@ -253,19 +253,37 @@ function fireConfetti(count = 60) {
 ══════════════════════════════════════════ */
 
 function initSiteHeader() {
+  // #region agent log
+  fetch('http://127.0.0.1:7416/ingest/586379a4-4958-4acd-a5bf-22eefd1c3b2e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a709be'},body:JSON.stringify({sessionId:'a709be',location:'base.js:initSiteHeader',message:'initSiteHeader called',data:{readyState:document.readyState,hasBody:!!document.body,pathname:location.pathname},hypothesisId:'h2',timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   const depth = location.pathname.split('/').filter(Boolean).length - 1;
   const prefix = depth > 0 ? '../'.repeat(depth) : './';
   const href = prefix + 'index.html';
+  // #region agent log
+  fetch('http://127.0.0.1:7416/ingest/586379a4-4958-4acd-a5bf-22eefd1c3b2e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a709be'},body:JSON.stringify({sessionId:'a709be',location:'base.js:initSiteHeader',message:'depth calc',data:{depth,prefix,href},hypothesisId:'h3',timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
 
   const header = document.createElement('header');
   header.id = 'site-header';
   header.innerHTML = '<a href="' + href + '" class="site-header-logo">Money Tools</a>';
   document.body.insertBefore(header, document.body.firstChild);
   document.body.classList.add('has-site-header');
+  // #region agent log
+  fetch('http://127.0.0.1:7416/ingest/586379a4-4958-4acd-a5bf-22eefd1c3b2e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a709be'},body:JSON.stringify({sessionId:'a709be',location:'base.js:initSiteHeader',message:'header inserted',data:{headerInDOM:!!document.getElementById('site-header')},hypothesisId:'h4',timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
 }
 
+// #region agent log
+fetch('http://127.0.0.1:7416/ingest/586379a4-4958-4acd-a5bf-22eefd1c3b2e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a709be'},body:JSON.stringify({sessionId:'a709be',location:'base.js:top',message:'base.js loaded',data:{readyState:document.readyState},hypothesisId:'h1',timestamp:Date.now()})}).catch(()=>{});
+// #endregion
 if (document.readyState === 'loading') {
+  // #region agent log
+  fetch('http://127.0.0.1:7416/ingest/586379a4-4958-4acd-a5bf-22eefd1c3b2e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a709be'},body:JSON.stringify({sessionId:'a709be',location:'base.js:branch',message:'defer to DOMContentLoaded',data:{},hypothesisId:'h5',timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   document.addEventListener('DOMContentLoaded', initSiteHeader);
 } else {
+  // #region agent log
+  fetch('http://127.0.0.1:7416/ingest/586379a4-4958-4acd-a5bf-22eefd1c3b2e',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'a709be'},body:JSON.stringify({sessionId:'a709be',location:'base.js:branch',message:'run initSiteHeader immediately',data:{},hypothesisId:'h5',timestamp:Date.now()})}).catch(()=>{});
+  // #endregion
   initSiteHeader();
 }

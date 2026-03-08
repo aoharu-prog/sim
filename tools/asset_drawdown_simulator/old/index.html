@@ -4,29 +4,22 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>資産形成 取り崩しシミュレーション</title>
-  <!-- [変更10] 外部フォント・旧CSS/JS読み込みをすべて削除し、Mint共通トークン・コンポーネントのみに差し替え -->
   <link rel="stylesheet" href="../../shared/tokens.css">
   <link rel="stylesheet" href="../../shared/components.css">
   <style>
-    /* ══════════════════════════════════════════
-       ページ全体（catalog / salary-calculator 準拠）
-    ═══════════════════════════════════════════ */
-    body {
-      font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', 'Hiragino Sans', sans-serif;
-      background: var(--base-bg);
-      background-image:
-        radial-gradient(circle at 15% 20%, rgba(168,213,186,0.18) 0%, transparent 45%),
-        radial-gradient(circle at 85% 80%, rgba(74,140,111,0.07) 0%, transparent 45%);
-      color: var(--text-main);
-      min-height: 100vh;
-      padding: 20px 16px 48px;
-      max-width: 1120px;
-      margin: 0 auto;
+    :root{
+      --mono: 'Roboto Mono', monospace;
+      --sans: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', 'Hiragino Sans', sans-serif;
+      --num: 'Roboto', sans-serif;
     }
-    @media (min-width: 640px) { body { padding: 36px 24px 60px; } }
-
-    /* --- layout --- */
-    .app-scope .wrap{
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background: var(--base-bg);
+      color: var(--text-main);
+    }
+    .wrap{
       max-width:1120px;
       margin:0 auto;
       padding: 10px 18px 28px;
@@ -35,157 +28,152 @@
       gap:16px;
     }
     @media (max-width: 980px){
-      .app-scope .wrap{grid-template-columns:1fr}
+      .wrap{grid-template-columns:1fr}
     }
-
-    /* --- card（ds-card 準拠） --- */
-    .app-scope .card{
+    .card{
       background: var(--card-bg);
-      border: 1px solid var(--sys-border);
-      border-radius: 28px;
-      box-shadow: 0 8px 40px var(--shadow), 0 1px 4px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8);
-      overflow: hidden;
-      position: relative;
+      border: 1px solid var(--mint-light);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px var(--shadow);
+      overflow:hidden;
     }
-    .app-scope .card::before{
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 4px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-deep), var(--accent));
-      background-size: 200%;
-      animation: shimmerBar 3s linear infinite;
-      border-radius: 28px 28px 0 0;
-    }
-    .app-scope .card .hd{
-      padding: 18px 20px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      border-bottom: 1px solid var(--sys-border);
+    .card .hd{
+      padding: 14px 16px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom: 1px solid var(--mint-light);
       background: var(--mint-pale);
     }
-    .app-scope .card .hd h2{
-      margin: 0;
+    .card .hd h2{
+      margin:0;
       font-size: 12px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      letter-spacing: .1em;
+      text-transform:uppercase;
       color: var(--accent-deep);
       font-weight: 700;
     }
-    .app-scope .card .bd{ padding: 18px 20px; }
+    .card .bd{padding:14px}
 
-    /* --- form grid --- */
-    .app-scope .row{
+    .row{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:10px;
       margin-bottom:10px;
     }
     @media (max-width: 520px){
-      .app-scope .row{grid-template-columns:1fr}
+      .row{grid-template-columns:1fr}
     }
 
-    .app-scope label{display:block; font-size:12px; color:var(--sub-text); margin-bottom:6px}
-    .app-scope input,
-    .app-scope select{
-      width:100%;
-      padding:10px 10px;
-      border-radius: 12px;
-      border:1px solid var(--mint-light);
-      background: var(--mint-pale);
-      color: var(--text-main);  /* [変更4] --text → --text-main */
-      outline:none;
+    label{
+      display: block;
+      font-size: 12px;
+      color: var(--sub-text);
+      margin-bottom: 6px;
     }
-    .app-scope input:focus,
-    .app-scope select:focus{
+    input, select{
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1.5px solid var(--mint-light);
+      background: var(--card-bg);
+      color: var(--text-main);
+      outline: none;
+      font-size: 14px;
+      font-family: var(--num);
+      transition: border-color .2s;
+    }
+    input:focus, select:focus{
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(168,213,186,0.25);
+      box-shadow: 0 0 0 3px rgba(168, 213, 186, 0.25);
     }
 
-    .app-scope .inline{
+    .inline{
       display:flex;
       gap:8px;
       align-items:center;
     }
-    .app-scope .inline > *{flex:1}
+    .inline > *{flex:1}
 
-    /* --- preset chips --- */
-    .app-scope .chips{
+    .chips{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
     }
-    .app-scope .chip{
-      cursor: pointer;
-      user-select: none;
-      padding: 7px 12px;
+    .chip{
+      cursor:pointer;
+      user-select:none;
+      padding: 6px 14px;
       border-radius: 999px;
-      border: 1px solid var(--sys-border);
-      background: var(--mint-pale);
-      color: var(--text-main);
+      border: 1.5px solid var(--mint-light);
+      background: var(--card-bg);
+      color: var(--sub-text);
       font-size: 12px;
-      transition: border-color 0.2s, background 0.2s;
+      font-weight: 500;
+      transition: background .15s, border-color .15s, color .15s;
     }
-    .app-scope .chip:hover{ border-color: var(--accent); background: rgba(168,213,186,0.15); }
-    .app-scope .chip.active{ border-color: var(--accent-deep); background: rgba(168,213,186,0.2); color: var(--accent-deep); font-weight: 600; }
+    .chip:hover{
+      border-color: var(--accent);
+      color: var(--accent-deep);
+      background: rgba(168,213,186,0.15);
+    }
 
-    /* --- buttons --- */
-    .app-scope .btns{display:flex; gap:10px; flex-wrap:wrap}
-    .app-scope button{
-      cursor: pointer;
-      border: 1px solid var(--sys-border);
-      background: var(--mint-pale);
+    .btns{display:flex; gap:10px; flex-wrap:wrap}
+    button{
+      cursor:pointer;
+      border: 1.5px solid var(--mint-light);
+      background: var(--card-bg);
       color: var(--text-main);
       padding: 10px 14px;
       border-radius: 12px;
       font-weight: 600;
-      transition: border-color 0.2s, filter 0.2s;
+      font-size: 13px;
+      transition: background .15s, border-color .15s;
     }
-    .app-scope button.primary{
+    button.primary{
       border-color: var(--accent);
       background: var(--accent);
       color: #fff;
     }
-    .app-scope button:hover{ filter: brightness(1.06); }
+    button:hover{ filter: brightness(0.96); }
+    button.primary:hover{ filter: brightness(1.04); }
 
-    /* --- KPI cards --- */
-    .app-scope .kpis{
+    .kpis{
       display:grid;
       grid-template-columns: repeat(3, 1fr);
       gap:10px;
     }
     @media (max-width: 980px){
-      .app-scope .kpis{grid-template-columns:1fr 1fr}
+      .kpis{grid-template-columns:1fr 1fr}
     }
     @media (max-width: 520px){
-      .app-scope .kpis{grid-template-columns:1fr}
+      .kpis{grid-template-columns:1fr}
     }
-    .app-scope .kpi{
+    .kpi{
       background: var(--mint-pale);
-      border: 1px solid var(--sys-border);
+      border: 1px solid var(--mint-light);
       border-radius: 14px;
       padding: 14px;
       min-height: 78px;
     }
-    .app-scope .kpi .t{font-size:12px; color:var(--sub-text)}
-    .app-scope .kpi .v{font-size:18px; margin-top:6px}
-    .app-scope .kpi .s{font-size:12px; color:var(--sub-text); margin-top:6px}
+    .kpi .t{ font-size: 11px; color: var(--sub-text); letter-spacing: .04em; }
+    .kpi .v{ font-family: var(--num); font-size: 20px; margin-top: 6px; color: var(--text-main); font-weight: 700; }
+    .kpi .s{ font-size: 11px; color: var(--sub-text); margin-top: 4px; }
 
-    /* --- canvas / chart --- */
-    .app-scope .canvasWrap{
-      padding: 12px 0;
+    .canvasWrap{
+      padding: 12px;
     }
-    .app-scope canvas{
+    canvas{
       width: 100%;
       height: 320px;
       background: var(--mint-pale);
-      border: 1px solid var(--sys-border);
+      border: 1px solid var(--mint-light);
       border-radius: 14px;
       display: block;
     }
 
-    /* --- legend --- */
-    .app-scope .legend{
+    .legend{
       display:flex;
       flex-wrap:wrap;
       gap:10px;
@@ -193,320 +181,293 @@
       color: var(--sub-text);
       font-size:12px;
     }
-    .app-scope .dot{
+    .dot{
       width:10px; height:10px; border-radius:999px; display:inline-block; margin-right:6px;
-      border:1px solid var(--mint-light);
+      border: 1px solid var(--mint-light);
     }
 
-    /* --- table --- */
-    .app-scope .tableWrap{
+    .tableWrap{
       overflow: auto;
       border-radius: 14px;
-      border: 1px solid var(--sys-border);
+      border: 1px solid var(--mint-light);
     }
-    .app-scope table{
-      width:100%;
+    table{
+      width: 100%;
       border-collapse: collapse;
-      font-size:12px;
+      font-size: 12px;
       min-width: 720px;
-      background: transparent;
+      background: var(--card-bg);
     }
-    .app-scope thead th{
+    thead th{
       position: sticky;
       top: 0;
       background: var(--mint-pale);
-      border-bottom: 1px solid var(--sys-border);
+      border-bottom: 1px solid var(--mint-light);
       color: var(--sub-text);
       text-align: right;
       padding: 10px 12px;
       font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: .06em;
     }
-    .app-scope thead th:first-child,
-    .app-scope tbody td:first-child{text-align:left}
-    .app-scope tbody td{
+    thead th:first-child, tbody td:first-child{text-align:left}
+    tbody td{
       padding: 8px 12px;
-      border-bottom: 1px solid var(--sys-border);
+      border-bottom: 1px solid var(--mint-light);
       text-align: right;
       white-space: nowrap;
-    }
-    .app-scope tbody tr:hover{background: rgba(168,213,186,.15)}
-
-    /* --- misc text / pill / status --- */
-    .app-scope .note{
-      color: var(--sub-text);
-      font-size:12px;
-      line-height:1.7;
-    }
-    .app-scope .pill{
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--sys-border);
-      background: var(--mint-pale);
-      font-size: 12px;
-      color: var(--sub-text);
-    }
-
-    /* --- semantic color helpers --- */
-    .app-scope .warnText{ color: var(--warn-color); }
-    .app-scope .badText { color: #d45353; }
-    .app-scope .goodText{ color: var(--accent-deep); }
-
-    /* --- page footer / disclaimer --- */
-    .app-scope .footer{
-      margin-top: 12px;
-      padding: 14px 18px;
-      background: rgba(168,213,186,0.08);
-      border-left: 3px solid var(--accent);
-      border-radius: 12px;
-      font-size: clamp(0.58rem, 1.8vw, 0.65rem);
-      color: var(--sub-text);
-      line-height: 1.8;
-      letter-spacing: 0.04em;
-    }
-    @media (min-width: 600px) { .app-scope .footer { padding: 16px 22px; } }
-
-    /* --- page header --- */
-    .app-scope .page-header{
-      padding: 0 0 24px;
-      margin-bottom: 4px;
-    }
-    .app-scope .page-header h1{
-      margin: 0;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      font-size: clamp(1.25rem, 2.5vw, 1.75rem);
       color: var(--text-main);
+      font-family: var(--num);
     }
-    .app-scope .sub{
-      margin-top: 8px;
+    tbody tr:hover{ background: rgba(168,213,186,0.1); }
+
+    .note{
       color: var(--sub-text);
-      line-height: 1.65;
-      font-size: clamp(0.875rem, 2vw, 0.95rem);
+      font-size: 12px;
+      line-height: 1.7;
     }
+
+    .pill{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      padding:6px 10px;
+      border-radius: 999px;
+      border: 1.5px solid var(--mint-light);
+      background: var(--card-bg);
+      font-size:12px;
+      color: var(--sub-text);
+    }
+
+    .warnText{ color: var(--warn-color); }
+    .badText{ color: #e05a5a; }
+    .goodText{ color: var(--accent-deep); }
+
+    .footer{
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 18px 26px;
+      color: var(--sub-text);
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    .back-to-index{ max-width: 1120px; margin: 0 auto; padding: 0 18px 24px; text-align: center; }
+    .back-to-index a{
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 10px 20px;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: filter .2s;
+    }
+    .back-to-index a:hover{ filter: brightness(1.06); }
   </style>
 </head>
-<!-- [変更6] <body> 直下のコンテンツを <main class="app-scope"> で囲む -->
 <body>
-<main class="app-scope">
+<h1>資産形成の取り崩しシミュレーション</h1>
+<p>つみたて → 運用 → 取り崩しを <span class="pill">年次</span> で試算します。「実質（インフレ調整）」と「名目（額面）」の両方を出します。計算は単純化したモデルです（税金・口座区分・相場変動の年内ブレは未考慮）。</p>
 
-  <!-- [変更5] <header> タグを削除し、app-scope 内の div.page-header に変換 -->
-  <div class="page-header">
-    <h1>資産形成の取り崩しシミュレーション</h1>
-    <div class="sub">
-      つみたて → 運用 → 取り崩しを <span class="pill">年次</span> で試算します。<br>
-      「実質（インフレ調整）」と「名目（額面）」の両方を出します。計算は単純化したモデルです（税金・口座区分・相場変動の年内ブレは未考慮）。
+<main class="wrap">
+  <section class="card" aria-label="入力">
+    <div class="hd">
+      <h2>Inputs</h2>
+      <div class="chips" id="presetChips">
+        <span class="chip" data-preset="balanced">標準</span>
+        <span class="chip" data-preset="conservative">保守</span>
+        <span class="chip" data-preset="aggressive">強気</span>
+        <span class="chip" data-preset="fire">FIRE風</span>
+      </div>
     </div>
-  </div>
+    <div class="bd">
 
-  <div class="wrap">
-    <section class="card" aria-label="入力">
-      <div class="hd">
-        <h2>Inputs</h2>
-        <div class="chips" id="presetChips">
-          <span class="chip" data-preset="balanced">標準</span>
-          <span class="chip" data-preset="conservative">保守</span>
-          <span class="chip" data-preset="aggressive">強気</span>
-          <span class="chip" data-preset="fire">FIRE風</span>
+      <div class="row">
+        <div>
+          <label for="startAge">開始年齢</label>
+          <input id="startAge" type="number" min="0" step="1" value="35" />
+        </div>
+        <div>
+          <label for="retireAge">取り崩し開始年齢</label>
+          <input id="retireAge" type="number" min="0" step="1" value="60" />
         </div>
       </div>
-      <div class="bd">
 
-        <div class="row">
-          <div>
-            <label for="startAge">開始年齢</label>
-            <input id="startAge" type="number" min="0" step="1" value="35" />
-          </div>
-          <div>
-            <label for="retireAge">取り崩し開始年齢</label>
-            <input id="retireAge" type="number" min="0" step="1" value="60" />
-          </div>
+      <div class="row">
+        <div>
+          <label for="endAge">終了年齢（何歳まで見る？）</label>
+          <input id="endAge" type="number" min="0" step="1" value="95" />
         </div>
-
-        <div class="row">
-          <div>
-            <label for="endAge">終了年齢（何歳まで見る？）</label>
-            <input id="endAge" type="number" min="0" step="1" value="95" />
-          </div>
-          <div>
-            <label for="initial">初期資産（円）</label>
-            <input id="initial" type="text" inputmode="numeric" data-comma="int" value="9,000,000" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label for="contrib">積立（年額・円）</label>
-            <input id="contrib" type="text" inputmode="numeric" data-comma="int" value="2,700,000" />
-          </div>
-          <div>
-            <label for="contribEndAge">積立終了年齢</label>
-            <input id="contribEndAge" type="number" min="0" step="1" value="60" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label for="nominalReturn">期待リターン（年率・%）</label>
-            <input id="nominalReturn" type="number" step="0.1" value="5.0" />
-          </div>
-          <div>
-            <label for="fee">運用コスト（年率・%）</label>
-            <input id="fee" type="number" step="0.01" value="0.2" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label for="inflation">インフレ率（年率・%）</label>
-            <input id="inflation" type="number" step="0.1" value="2.0" />
-          </div>
-          <div>
-            <label for="rebalance">取り崩し期リターン調整（%pt）</label>
-            <input id="rebalance" type="number" step="0.1" value="0.0" />
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label for="strategy">取り崩し方式</label>
-            <select id="strategy">
-              <option value="fixed">定額（名目）</option>
-              <option value="real">定額（実質＝インフレ調整）</option>
-              <option value="percent">定率（残高の%）</option>
-              <option value="guardrails">ガードレール（上げ下げ）</option>
-            </select>
-          </div>
-          <div>
-            <label for="withdraw">取り崩し（年額・円 or %）</label>
-            <input id="withdraw" type="text" inputmode="numeric" data-comma="smart" value="2,400,000" />
-          </div>
-        </div>
-
-        <div id="guardrailsBox" style="display:none">
-          <div class="row">
-            <div>
-              <label for="grBaseRate">基準率（% / 年）</label>
-              <input id="grBaseRate" type="number" step="0.1" value="4.0" />
-            </div>
-            <div>
-              <label for="grBand">バンド（±%）</label>
-              <input id="grBand" type="number" step="1" value="20" />
-            </div>
-          </div>
-          <div class="row">
-            <div>
-              <label for="grStep">調整幅（%）</label>
-              <input id="grStep" type="number" step="1" value="10" />
-            </div>
-            <div>
-              <label for="grMinMax">下限/上限（基準の%）</label>
-              <div class="inline">
-                <input id="grMin" type="number" step="1" value="60" />
-                <input id="grMax" type="number" step="1" value="140" />
-              </div>
-            </div>
-          </div>
-          <div class="note">ガードレール：残高が「基準残高±バンド」を外れたら、取り崩し額をステップ分だけ上げ下げします（簡易版）。</div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label for="oneTimeAge">一時イベント年齢（任意）</label>
-            <input id="oneTimeAge" type="number" step="1" value="0" />
-          </div>
-          <div>
-            <label for="oneTimeAmount">一時入出金（円）※支出はマイナス</label>
-            <input id="oneTimeAmount" type="text" inputmode="numeric" data-comma="intSigned" value="0" />
-          </div>
-        </div>
-
-        <div class="btns">
-          <button class="primary" id="runBtn">再計算</button>
-          <button id="swapBtn" title="取り崩し額に4%ルール（開始時残高の4%）をセット">4%ルールをセット</button>
-          <button id="downloadBtn" title="結果をCSVで保存">CSVダウンロード</button>
-        </div>
-
-        <div style="margin-top:12px" class="note" id="statusNote"></div>
-      </div>
-    </section>
-
-    <section class="card" aria-label="結果">
-      <div class="hd">
-        <h2>Results</h2>
-        <div class="pill" id="verPill">v1 (年次/単純モデル)</div>
-      </div>
-      <div class="bd">
-        <div class="kpis">
-          <div class="kpi">
-            <div class="t">終了時残高（名目）</div>
-            <div class="v" id="kpiEndNom">-</div>
-            <div class="s" id="kpiEndNomSub">-</div>
-          </div>
-          <div class="kpi">
-            <div class="t">終了時残高（実質）</div>
-            <div class="v" id="kpiEndReal">-</div>
-            <div class="s" id="kpiEndRealSub">-</div>
-          </div>
-          <div class="kpi">
-            <div class="t">枯渇年齢（もし枯渇したら）</div>
-            <div class="v" id="kpiDeplete">-</div>
-            <div class="s" id="kpiDepleteSub">-</div>
-          </div>
-        </div>
-
-        <div class="canvasWrap">
-          <canvas id="chart" width="980" height="360" aria-label="残高推移チャート"></canvas>
-          <div class="legend">
-            <span><span class="dot" style="background: var(--data-blue-2)"></span>名目残高</span>
-            <span><span class="dot" style="background: var(--accent-deep)"></span>実質残高</span>
-            <span><span class="dot" style="background: var(--data-orange)"></span>取り崩し（実質）</span>
-          </div>
-        </div>
-
-        <div class="tableWrap">
-          <table>
-            <thead>
-              <tr>
-                <th>年齢</th>
-                <th>期首残高</th>
-                <th>積立</th>
-                <th>取り崩し</th>
-                <th>運用後残高</th>
-                <th>実質残高</th>
-              </tr>
-            </thead>
-            <tbody id="tbody"></tbody>
-          </table>
-        </div>
-
-        <div style="margin-top:12px" class="note">
-          ヒント：<span class="goodText">「定額（実質）」</span>は生活費の購買力を一定にしたい場合に向きます。<span class="warnText">「定率」</span>は枯渇しにくい反面、取り崩し額が上下します。
+        <div>
+          <label for="initial">初期資産（円）</label>
+          <input id="initial" type="text" inputmode="numeric" data-comma="int" value="9,000,000" />
         </div>
       </div>
-    </section>
-  </div>
 
-  <div class="footer">
-    <b>注意：</b>税金（譲渡益課税・配当課税）、口座区分（NISA/iDeCo/課税）、年内の変動、生活費の臨時増減などは未考慮です。実務で使う場合は、前提を増やした「詳細版」に育てるのがおすすめです。
-  </div>
+      <div class="row">
+        <div>
+          <label for="contrib">積立（年額・円）</label>
+          <input id="contrib" type="text" inputmode="numeric" data-comma="int" value="2,700,000" />
+        </div>
+        <div>
+          <label for="contribEndAge">積立終了年齢</label>
+          <input id="contribEndAge" type="number" min="0" step="1" value="60" />
+        </div>
+      </div>
 
-  <div class="back-to-index">
-    <a href="../../index.html">← マネーツールへ戻る</a>
-  </div>
+      <div class="row">
+        <div>
+          <label for="nominalReturn">期待リターン（年率・%）</label>
+          <input id="nominalReturn" type="number" step="0.1" value="5.0" />
+        </div>
+        <div>
+          <label for="fee">運用コスト（年率・%）</label>
+          <input id="fee" type="number" step="0.01" value="0.2" />
+        </div>
+      </div>
 
-</main><!-- /.app-scope -->
+      <div class="row">
+        <div>
+          <label for="inflation">インフレ率（年率・%）</label>
+          <input id="inflation" type="number" step="0.1" value="2.0" />
+        </div>
+        <div>
+          <label for="rebalance">取り崩し期リターン調整（%pt）</label>
+          <input id="rebalance" type="number" step="0.1" value="0.0" />
+        </div>
+      </div>
 
-<!-- 共通JS（ヘッダー自動挿入 + ユーティリティ関数） -->
+      <div class="row">
+        <div>
+          <label for="strategy">取り崩し方式</label>
+          <select id="strategy">
+            <option value="fixed">定額（名目）</option>
+            <option value="real">定額（実質＝インフレ調整）</option>
+            <option value="percent">定率（残高の%）</option>
+            <option value="guardrails">ガードレール（上げ下げ）</option>
+          </select>
+        </div>
+        <div>
+          <label for="withdraw">取り崩し（年額・円 or %）</label>
+          <input id="withdraw" type="text" inputmode="numeric" data-comma="smart" value="2,400,000" />
+        </div>
+      </div>
+
+      <div id="guardrailsBox" style="display:none">
+        <div class="row">
+          <div>
+            <label for="grBaseRate">基準率（% / 年）</label>
+            <input id="grBaseRate" type="number" step="0.1" value="4.0" />
+          </div>
+          <div>
+            <label for="grBand">バンド（±%）</label>
+            <input id="grBand" type="number" step="1" value="20" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="grStep">調整幅（%）</label>
+            <input id="grStep" type="number" step="1" value="10" />
+          </div>
+          <div>
+            <label for="grMinMax">下限/上限（基準の%）</label>
+            <div class="inline">
+              <input id="grMin" type="number" step="1" value="60" />
+              <input id="grMax" type="number" step="1" value="140" />
+            </div>
+          </div>
+        </div>
+        <div class="note">ガードレール：残高が「基準残高±バンド」を外れたら、取り崩し額をステップ分だけ上げ下げします（簡易版）。</div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="oneTimeAge">一時イベント年齢（任意）</label>
+          <input id="oneTimeAge" type="number" step="1" value="0" />
+        </div>
+        <div>
+          <label for="oneTimeAmount">一時入出金（円）※支出はマイナス</label>
+          <input id="oneTimeAmount" type="text" inputmode="numeric" data-comma="intSigned" value="0" />
+        </div>
+      </div>
+
+      <div class="btns">
+        <button class="primary" id="runBtn">再計算</button>
+        <button id="swapBtn" title="取り崩し額に4%ルール（開始時残高の4%）をセット">4%ルールをセット</button>
+        <button id="downloadBtn" title="結果をCSVで保存">CSVダウンロード</button>
+      </div>
+
+      <div style="margin-top:12px" class="note" id="statusNote"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-label="結果">
+    <div class="hd">
+      <h2>Results</h2>
+      <div class="pill" id="verPill">v1 (年次/単純モデル)</div>
+    </div>
+    <div class="bd">
+      <div class="kpis">
+        <div class="kpi">
+          <div class="t">終了時残高（名目）</div>
+          <div class="v" id="kpiEndNom">-</div>
+          <div class="s" id="kpiEndNomSub">-</div>
+        </div>
+        <div class="kpi">
+          <div class="t">終了時残高（実質）</div>
+          <div class="v" id="kpiEndReal">-</div>
+          <div class="s" id="kpiEndRealSub">-</div>
+        </div>
+        <div class="kpi">
+          <div class="t">枯渇年齢（もし枯渇したら）</div>
+          <div class="v" id="kpiDeplete">-</div>
+          <div class="s" id="kpiDepleteSub">-</div>
+        </div>
+      </div>
+
+      <div class="canvasWrap">
+        <canvas id="chart" width="980" height="360" aria-label="残高推移チャート"></canvas>
+        <div class="legend">
+          <span><span class="dot" style="background: var(--data-blue-1)"></span>名目残高</span>
+          <span><span class="dot" style="background: var(--accent-deep)"></span>実質残高</span>
+          <span><span class="dot" style="background: var(--warn-color)"></span>取り崩し（実質）</span>
+        </div>
+      </div>
+
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>年齢</th>
+              <th>期首残高</th>
+              <th>積立</th>
+              <th>取り崩し</th>
+              <th>運用後残高</th>
+              <th>実質残高</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:12px" class="note">
+        ヒント：<span class="goodText">「定額（実質）」</span>は生活費の購買力を一定にしたい場合に向きます。<span class="warnText">「定率」</span>は枯渇しにくい反面、取り崩し額が上下します。
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="footer">
+  <b>注意：</b>税金（譲渡益課税・配当課税）、口座区分（NISA/iDeCo/課税）、年内の変動、生活費の臨時増減などは未考慮です。実務で使う場合は、前提を増やした「詳細版」に育てるのがおすすめです。
+</div>
+
+<div class="back-to-index">
+  <a href="../../index.html">← マネーツールへ戻る</a>
+</div>
+
 <script src="../../shared/base.js"></script>
-
 <script>
-// [変更7] IIFE で全スクリプトをラップ（strict mode を適用）
-(function(){ 'use strict';
-
   // ------------------------------
   // Utils
   // ------------------------------
@@ -907,19 +868,19 @@
       <div class="pill">取り崩し開始：<b style="color:var(--text-main)">${p.retireAge}歳</b></div>
       <div class="pill">積立：<b style="color:var(--text-main)">年¥${yen(p.contrib)}</b>（〜${p.contribEndAge}歳未満）</div>
     `;
-    // ↑ [変更4] style="color:var(--text)" → style="color:var(--text-main)"
 
-    drawChart(years, p);
+    requestAnimationFrame(() => drawChart(years, p));
   }
 
   function drawChart(years, p){
     const canvas = $('chart');
     const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-    // Fit to device pixels
+    // Fit to device pixels（clientWidth/Height が 0 の場合は HTML 属性値をフォールバック）
     const dpr = Math.max(1, window.devicePixelRatio || 1);
-    const cssW = canvas.clientWidth;
-    const cssH = canvas.clientHeight;
+    const cssW = canvas.clientWidth || canvas.width || 980;
+    const cssH = canvas.clientHeight || canvas.height || 360;
     canvas.width = Math.round(cssW * dpr);
     canvas.height = Math.round(cssH * dpr);
     ctx.scale(dpr, dpr);
@@ -927,6 +888,7 @@
     const W = cssW, H = cssH;
     ctx.clearRect(0,0,W,H);
 
+    const numFont = getComputedStyle(document.documentElement).getPropertyValue('--num').trim() || 'Roboto, sans-serif';
     const pad = {l:52, r:16, t:16, b:34};
     const plotW = W - pad.l - pad.r;
     const plotH = H - pad.t - pad.b;
@@ -945,7 +907,7 @@
     // Grid
     ctx.save();
     ctx.globalAlpha = 0.35;
-    ctx.strokeStyle = 'rgba(74,140,111,.2)';
+    ctx.strokeStyle = 'rgba(74,140,111,0.12)';
     ctx.lineWidth = 1;
 
     const gridN = 5;
@@ -957,7 +919,7 @@
       ctx.stroke();
 
       const val = maxY * (1 - g/gridN);
-      ctx.fillStyle = 'rgba(74,140,111,.8)';
+      ctx.fillStyle = '#7a9a8e';
       ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
@@ -967,8 +929,8 @@
 
     // Age ticks
     ctx.save();
-    ctx.fillStyle = 'rgba(74,140,111,.8)';
-    ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
+    ctx.fillStyle = '#7a9a8e';
+    ctx.font = '11px ' + numFont;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     const tickEvery = Math.max(1, Math.round(years.length/8));
@@ -988,7 +950,7 @@
     ctx.lineTo(x(retireIdx), pad.t + plotH);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(224,122,58,.9)';
+    ctx.fillStyle = 'rgba(224,122,58,.85)';
     ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
@@ -1012,7 +974,7 @@
 
     // Fill under nominal for depth
     ctx.save();
-    ctx.fillStyle = 'rgba(122,168,232,.12)';
+    ctx.fillStyle = 'rgba(74,127,212,.10)';
     ctx.beginPath();
     years.forEach((d,i)=>{
       const xx = x(i), yy = y(d.end);
@@ -1025,16 +987,12 @@
     ctx.fill();
     ctx.restore();
 
-    const style = getComputedStyle(document.documentElement);
-    const colNom = style.getPropertyValue('--data-blue-2').trim() || '#7aa8e8';
-    const colReal = style.getPropertyValue('--accent-deep').trim() || '#4a8c6f';
-    const colWithdraw = style.getPropertyValue('--data-orange').trim() || '#e07a3a';
-    drawLine(nom, colNom);
-    drawLine(real, colReal);
+    drawLine(nom, getComputedStyle(document.documentElement).getPropertyValue('--data-blue-1').trim() || '#4a7fd4');
+    drawLine(real, getComputedStyle(document.documentElement).getPropertyValue('--accent-deep').trim() || '#4a8c6f');
 
     // Withdrawal as thin line (real)
     ctx.save();
-    ctx.strokeStyle = colWithdraw;
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--warn-color').trim() || '#e07a3a';
     ctx.lineWidth = 1.6;
     ctx.globalAlpha = 0.9;
     ctx.beginPath();
@@ -1059,7 +1017,7 @@
 
       ctx.save();
       // vertical line
-      ctx.strokeStyle = 'rgba(74,140,111,.2)';
+      ctx.strokeStyle = 'rgba(74,140,111,0.12)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(xx, pad.t);
@@ -1068,9 +1026,9 @@
 
       // points
       const pts = [
-        {v:d.end, c:colNom},
-        {v:d.realEnd, c:colReal},
-        {v:d.realWithdraw, c:colWithdraw},
+        {v:d.end, c:getComputedStyle(document.documentElement).getPropertyValue('--data-blue-1').trim() || '#4a7fd4'},
+        {v:d.realEnd, c:getComputedStyle(document.documentElement).getPropertyValue('--accent-deep').trim() || '#4a8c6f'},
+        {v:d.realWithdraw, c:getComputedStyle(document.documentElement).getPropertyValue('--warn-color').trim() || '#e07a3a'},
       ];
       pts.forEach(p2=>{
         ctx.fillStyle = p2.c;
@@ -1091,14 +1049,14 @@
       const bx = clamp(xx + 10, pad.l, W - pad.r - boxW);
       const by = pad.t + 10;
 
-      ctx.fillStyle = 'rgba(255,255,255,.98)';
-      ctx.strokeStyle = 'rgba(212,237,227,.9)';
+      ctx.fillStyle = 'rgba(255,255,255,0.96)';
+      ctx.strokeStyle = 'rgba(74,140,111,0.3)';
       ctx.lineWidth = 1;
       roundRect(ctx, bx, by, boxW, boxH, 10);
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = 'rgba(68,80,76,.95)';
+      ctx.fillStyle = '#44504c';
       ctx.font = '12px ' + getComputedStyle(document.body).fontFamily;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
@@ -1302,16 +1260,10 @@
   });
 
   // Init
-  // [変更8] document.addEventListener('DOMContentLoaded', cb) → window.addEventListener('load', cb) に変更
-  window.addEventListener('load', () => {
-    onStrategyChange();
-    ['initial','contrib','withdraw','oneTimeAmount'].forEach(id=>attachCommaInput($(id)));
-    run();
-  });
-
+  onStrategyChange();
+  ['initial','contrib','withdraw','oneTimeAmount'].forEach(id=>attachCommaInput($(id)));
+  run();
   window.addEventListener('resize', ()=>{ if (lastResult) render(lastResult.res, lastResult.p); });
-
-})(); // end IIFE [変更7]
 </script>
 </body>
 </html>

@@ -8,22 +8,12 @@
   <link rel="stylesheet" href="../../shared/tokens.css">
   <link rel="stylesheet" href="../../shared/components.css">
   <style>
-    /* ══════════════════════════════════════════
-       ページ全体（catalog / salary-calculator 準拠）
-    ═══════════════════════════════════════════ */
-    body {
-      font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', 'Hiragino Sans', sans-serif;
-      background: var(--base-bg);
-      background-image:
-        radial-gradient(circle at 15% 20%, rgba(168,213,186,0.18) 0%, transparent 45%),
-        radial-gradient(circle at 85% 80%, rgba(74,140,111,0.07) 0%, transparent 45%);
-      color: var(--text-main);
-      min-height: 100vh;
-      padding: 20px 16px 48px;
-      max-width: 1120px;
-      margin: 0 auto;
-    }
-    @media (min-width: 640px) { body { padding: 36px 24px 60px; } }
+    /* ============================================================
+       [変更1] :root / * / html / body への直接スタイルは削除
+       [変更2] Google Fonts @import / <link> は削除済み
+       [変更3] 残ったセレクタはすべて .app-scope プレフィックスを付与
+       [変更4] ハードコードカラーを CSS 変数に置き換え済み
+    ============================================================ */
 
     /* --- layout --- */
     .app-scope .wrap{
@@ -38,41 +28,32 @@
       .app-scope .wrap{grid-template-columns:1fr}
     }
 
-    /* --- card（ds-card 準拠） --- */
+    /* --- card --- */
     .app-scope .card{
-      background: var(--card-bg);
-      border: 1px solid var(--sys-border);
-      border-radius: 28px;
-      box-shadow: 0 8px 40px var(--shadow), 0 1px 4px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.8);
-      overflow: hidden;
-      position: relative;
-    }
-    .app-scope .card::before{
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 4px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-deep), var(--accent));
-      background-size: 200%;
-      animation: shimmerBar 3s linear infinite;
-      border-radius: 28px 28px 0 0;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius, 16px);
+      box-shadow: var(--shadow, 0 14px 40px rgba(0,0,0,.45));
+      overflow:hidden;
     }
     .app-scope .card .hd{
-      padding: 18px 20px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      border-bottom: 1px solid var(--sys-border);
-      background: var(--mint-pale);
+      padding:14px 14px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      background: rgba(10,14,20,.55);
     }
     .app-scope .card .hd h2{
-      margin: 0;
-      font-size: 12px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--accent-deep);
-      font-weight: 700;
+      margin:0;
+      font-size:14px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color: var(--sub-text);  /* [変更4] #9fb0c2 → --sub-text 相当 */
+      font-weight:800;
     }
-    .app-scope .card .bd{ padding: 18px 20px; }
+    .app-scope .card .bd{padding:14px}
 
     /* --- form grid --- */
     .app-scope .row{
@@ -91,15 +72,15 @@
       width:100%;
       padding:10px 10px;
       border-radius: 12px;
-      border:1px solid var(--mint-light);
-      background: var(--mint-pale);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(5,8,12,.55);
       color: var(--text-main);  /* [変更4] --text → --text-main */
       outline:none;
     }
     .app-scope input:focus,
     .app-scope select:focus{
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(168,213,186,0.25);
+      border-color: rgba(102,227,196,.55);
+      box-shadow: 0 0 0 4px rgba(102,227,196,.12);
     }
 
     .app-scope .inline{
@@ -116,37 +97,33 @@
       flex-wrap:wrap;
     }
     .app-scope .chip{
-      cursor: pointer;
-      user-select: none;
-      padding: 7px 12px;
+      cursor:pointer;
+      user-select:none;
+      padding:7px 12px;
       border-radius: 999px;
-      border: 1px solid var(--sys-border);
-      background: var(--mint-pale);
-      color: var(--text-main);
-      font-size: 12px;
-      transition: border-color 0.2s, background 0.2s;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      color: var(--text-main);  /* [変更4] --text → --text-main */
+      font-size:12px;
     }
-    .app-scope .chip:hover{ border-color: var(--accent); background: rgba(168,213,186,0.15); }
-    .app-scope .chip.active{ border-color: var(--accent-deep); background: rgba(168,213,186,0.2); color: var(--accent-deep); font-weight: 600; }
+    .app-scope .chip:hover{border-color: rgba(122,167,255,.55)}
 
     /* --- buttons --- */
     .app-scope .btns{display:flex; gap:10px; flex-wrap:wrap}
     .app-scope button{
-      cursor: pointer;
-      border: 1px solid var(--sys-border);
-      background: var(--mint-pale);
-      color: var(--text-main);
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-weight: 600;
-      transition: border-color 0.2s, filter 0.2s;
+      cursor:pointer;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      color: var(--text-main);  /* [変更4] --text → --text-main */
+      padding:10px 12px;
+      border-radius: 14px;
+      font-weight:700;
     }
     .app-scope button.primary{
-      border-color: var(--accent);
-      background: var(--accent);
-      color: #fff;
+      border-color: rgba(102,227,196,.55);
+      background: linear-gradient(180deg, rgba(102,227,196,.18), rgba(102,227,196,.08));
     }
-    .app-scope button:hover{ filter: brightness(1.06); }
+    .app-scope button:hover{filter:brightness(1.08)}
 
     /* --- KPI cards --- */
     .app-scope .kpis{
@@ -161,11 +138,11 @@
       .app-scope .kpis{grid-template-columns:1fr}
     }
     .app-scope .kpi{
-      background: var(--mint-pale);
-      border: 1px solid var(--sys-border);
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.08);
       border-radius: 14px;
-      padding: 14px;
-      min-height: 78px;
+      padding:12px;
+      min-height:78px;
     }
     .app-scope .kpi .t{font-size:12px; color:var(--sub-text)}
     .app-scope .kpi .v{font-size:18px; margin-top:6px}
@@ -173,15 +150,15 @@
 
     /* --- canvas / chart --- */
     .app-scope .canvasWrap{
-      padding: 12px 0;
+      padding: 12px;
     }
     .app-scope canvas{
-      width: 100%;
-      height: 320px;
-      background: var(--mint-pale);
-      border: 1px solid var(--sys-border);
+      width:100%;
+      height:320px;
+      background: rgba(0,0,0,.15);
+      border:1px solid rgba(255,255,255,.08);
       border-radius: 14px;
-      display: block;
+      display:block;
     }
 
     /* --- legend --- */
@@ -195,42 +172,42 @@
     }
     .app-scope .dot{
       width:10px; height:10px; border-radius:999px; display:inline-block; margin-right:6px;
-      border:1px solid var(--mint-light);
+      border:1px solid rgba(255,255,255,.18);
     }
 
     /* --- table --- */
     .app-scope .tableWrap{
-      overflow: auto;
+      overflow:auto;
       border-radius: 14px;
-      border: 1px solid var(--sys-border);
+      border:1px solid rgba(255,255,255,.08);
     }
     .app-scope table{
       width:100%;
       border-collapse: collapse;
       font-size:12px;
       min-width: 720px;
-      background: transparent;
+      background: rgba(255,255,255,.02);
     }
     .app-scope thead th{
-      position: sticky;
-      top: 0;
-      background: var(--mint-pale);
-      border-bottom: 1px solid var(--sys-border);
+      position:sticky;
+      top:0;
+      background: rgba(10,14,20,.95);
+      border-bottom:1px solid rgba(255,255,255,.10);
       color: var(--sub-text);
-      text-align: right;
-      padding: 10px 12px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
+      text-align:right;
+      padding:10px 10px;
+      font-weight:800;
+      letter-spacing:.06em;
     }
     .app-scope thead th:first-child,
     .app-scope tbody td:first-child{text-align:left}
     .app-scope tbody td{
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--sys-border);
-      text-align: right;
-      white-space: nowrap;
+      padding:8px 10px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      text-align:right;
+      white-space:nowrap;
     }
-    .app-scope tbody tr:hover{background: rgba(168,213,186,.15)}
+    .app-scope tbody tr:hover{background: rgba(122,167,255,.06)}
 
     /* --- misc text / pill / status --- */
     .app-scope .note{
@@ -239,53 +216,49 @@
       line-height:1.7;
     }
     .app-scope .pill{
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      padding: 6px 10px;
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      padding:6px 10px;
       border-radius: 999px;
-      border: 1px solid var(--sys-border);
-      background: var(--mint-pale);
-      font-size: 12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      font-size:12px;
       color: var(--sub-text);
     }
 
     /* --- semantic color helpers --- */
-    .app-scope .warnText{ color: var(--warn-color); }
-    .app-scope .badText { color: #d45353; }
-    .app-scope .goodText{ color: var(--accent-deep); }
+    .app-scope .warnText{color: var(--warn-color)}   /* [変更4] --warn → --warn-color */
+    .app-scope .badText {color: #ff6b6b}              /* 対応変数なし: そのまま */
+    .app-scope .goodText{color: #66e3c4}              /* 対応変数なし: そのまま */
 
-    /* --- page footer / disclaimer --- */
+    /* --- page footer note --- */
     .app-scope .footer{
-      margin-top: 12px;
-      padding: 14px 18px;
-      background: rgba(168,213,186,0.08);
-      border-left: 3px solid var(--accent);
-      border-radius: 12px;
-      font-size: clamp(0.58rem, 1.8vw, 0.65rem);
+      max-width:1120px;
+      margin:0 auto;
+      padding: 0 18px 26px;
       color: var(--sub-text);
-      line-height: 1.8;
-      letter-spacing: 0.04em;
+      font-size:12px;
+      line-height:1.7;
     }
-    @media (min-width: 600px) { .app-scope .footer { padding: 16px 22px; } }
 
-    /* --- page header --- */
+    /* --- page header (app-scope 内タイトル) --- */
     .app-scope .page-header{
-      padding: 0 0 24px;
-      margin-bottom: 4px;
+      padding:28px 18px 12px;
+      max-width:1120px;
+      margin:0 auto;
     }
     .app-scope .page-header h1{
-      margin: 0;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-      color: var(--text-main);
+      margin:0;
+      font-weight:800;
+      letter-spacing:.02em;
+      font-size: clamp(20px, 2.2vw, 30px);
     }
     .app-scope .sub{
-      margin-top: 8px;
-      color: var(--sub-text);
-      line-height: 1.65;
-      font-size: clamp(0.875rem, 2vw, 0.95rem);
+      margin-top:8px;
+      color:var(--sub-text);
+      line-height:1.6;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -461,9 +434,9 @@
         <div class="canvasWrap">
           <canvas id="chart" width="980" height="360" aria-label="残高推移チャート"></canvas>
           <div class="legend">
-            <span><span class="dot" style="background: var(--data-blue-2)"></span>名目残高</span>
-            <span><span class="dot" style="background: var(--accent-deep)"></span>実質残高</span>
-            <span><span class="dot" style="background: var(--data-orange)"></span>取り崩し（実質）</span>
+            <span><span class="dot" style="background: var(--accent2, #7aa7ff)"></span>名目残高</span>
+            <span><span class="dot" style="background: var(--accent, #66e3c4)"></span>実質残高</span>
+            <span><span class="dot" style="background: var(--warn, #ffcc66)"></span>取り崩し（実質）</span>
           </div>
         </div>
 
@@ -490,18 +463,12 @@
     </section>
   </div>
 
+  <!-- [変更5] <footer> タグを削除し、app-scope 内の div.footer に変換 -->
   <div class="footer">
     <b>注意：</b>税金（譲渡益課税・配当課税）、口座区分（NISA/iDeCo/課税）、年内の変動、生活費の臨時増減などは未考慮です。実務で使う場合は、前提を増やした「詳細版」に育てるのがおすすめです。
   </div>
 
-  <div class="back-to-index">
-    <a href="../../index.html">← マネーツールへ戻る</a>
-  </div>
-
 </main><!-- /.app-scope -->
-
-<!-- 共通JS（ヘッダー自動挿入 + ユーティリティ関数） -->
-<script src="../../shared/base.js"></script>
 
 <script>
 // [変更7] IIFE で全スクリプトをラップ（strict mode を適用）
@@ -515,7 +482,7 @@
     const s = Math.round(n).toString();
     return s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
-  // clamp は base.js から利用
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 
   // --- input comma formatting (no-regex) ---
   const stripCommas = (s) => String(s ?? '').split(',').join('');
@@ -945,7 +912,7 @@
     // Grid
     ctx.save();
     ctx.globalAlpha = 0.35;
-    ctx.strokeStyle = 'rgba(74,140,111,.2)';
+    ctx.strokeStyle = 'rgba(255,255,255,.25)';
     ctx.lineWidth = 1;
 
     const gridN = 5;
@@ -957,7 +924,7 @@
       ctx.stroke();
 
       const val = maxY * (1 - g/gridN);
-      ctx.fillStyle = 'rgba(74,140,111,.8)';
+      ctx.fillStyle = 'rgba(230,237,243,.75)';
       ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
       ctx.textAlign = 'right';
       ctx.textBaseline = 'middle';
@@ -967,7 +934,7 @@
 
     // Age ticks
     ctx.save();
-    ctx.fillStyle = 'rgba(74,140,111,.8)';
+    ctx.fillStyle = 'rgba(230,237,243,.75)';
     ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
@@ -980,7 +947,7 @@
     // Retirement marker
     const retireIdx = clamp(p.retireAge - p.startAge, 0, years.length-1);
     ctx.save();
-    ctx.strokeStyle = 'rgba(224,122,58,.65)';
+    ctx.strokeStyle = 'rgba(255,204,102,.65)';
     ctx.lineWidth = 1.5;
     ctx.setLineDash([6,6]);
     ctx.beginPath();
@@ -988,7 +955,7 @@
     ctx.lineTo(x(retireIdx), pad.t + plotH);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.fillStyle = 'rgba(224,122,58,.9)';
+    ctx.fillStyle = 'rgba(255,204,102,.85)';
     ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
@@ -1012,7 +979,7 @@
 
     // Fill under nominal for depth
     ctx.save();
-    ctx.fillStyle = 'rgba(122,168,232,.12)';
+    ctx.fillStyle = 'rgba(122,167,255,.10)';
     ctx.beginPath();
     years.forEach((d,i)=>{
       const xx = x(i), yy = y(d.end);
@@ -1025,16 +992,12 @@
     ctx.fill();
     ctx.restore();
 
-    const style = getComputedStyle(document.documentElement);
-    const colNom = style.getPropertyValue('--data-blue-2').trim() || '#7aa8e8';
-    const colReal = style.getPropertyValue('--accent-deep').trim() || '#4a8c6f';
-    const colWithdraw = style.getPropertyValue('--data-orange').trim() || '#e07a3a';
-    drawLine(nom, colNom);
-    drawLine(real, colReal);
+    drawLine(nom, getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim() || '#7aa7ff');
+    drawLine(real, getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#66e3c4');
 
     // Withdrawal as thin line (real)
     ctx.save();
-    ctx.strokeStyle = colWithdraw;
+    ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--warn').trim() || '#ffcc66';
     ctx.lineWidth = 1.6;
     ctx.globalAlpha = 0.9;
     ctx.beginPath();
@@ -1059,7 +1022,7 @@
 
       ctx.save();
       // vertical line
-      ctx.strokeStyle = 'rgba(74,140,111,.2)';
+      ctx.strokeStyle = 'rgba(255,255,255,.25)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(xx, pad.t);
@@ -1068,9 +1031,9 @@
 
       // points
       const pts = [
-        {v:d.end, c:colNom},
-        {v:d.realEnd, c:colReal},
-        {v:d.realWithdraw, c:colWithdraw},
+        {v:d.end, c:getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim() || '#7aa7ff'},
+        {v:d.realEnd, c:getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#66e3c4'},
+        {v:d.realWithdraw, c:getComputedStyle(document.documentElement).getPropertyValue('--warn').trim() || '#ffcc66'},
       ];
       pts.forEach(p2=>{
         ctx.fillStyle = p2.c;
@@ -1091,14 +1054,14 @@
       const bx = clamp(xx + 10, pad.l, W - pad.r - boxW);
       const by = pad.t + 10;
 
-      ctx.fillStyle = 'rgba(255,255,255,.98)';
-      ctx.strokeStyle = 'rgba(212,237,227,.9)';
+      ctx.fillStyle = 'rgba(10,14,20,.92)';
+      ctx.strokeStyle = 'rgba(255,255,255,.14)';
       ctx.lineWidth = 1;
       roundRect(ctx, bx, by, boxW, boxH, 10);
       ctx.fill();
       ctx.stroke();
 
-      ctx.fillStyle = 'rgba(68,80,76,.95)';
+      ctx.fillStyle = 'rgba(230,237,243,.92)';
       ctx.font = '12px ' + getComputedStyle(document.body).fontFamily;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'top';
