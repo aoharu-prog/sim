@@ -26,7 +26,6 @@ body {
   color: var(--text-main);
   min-height: 100vh;
   padding: 20px 16px 48px;
-  max-width: 900px;
   margin: 0 auto;
 }
 @media (min-width: 640px) {
@@ -240,8 +239,6 @@ canvas { display: block; cursor: default; }
    2カラムページレイアウト（ds-page-cols オーバーライド）
 ══════════════════════════════════════════ */
 @media (min-width: 800px) {
-  body { max-width: 1120px; }
-
   .app-scope .ds-page-cols {
     grid-template-columns: 380px 1fr;
     gap: 24px;
@@ -259,8 +256,8 @@ canvas { display: block; cursor: default; }
   .app-scope .ds-page-cols .ds-select-underline { font-size: 1.6rem; }
   .app-scope .ds-page-cols .ds-pm-btn { width: 26px; height: 26px; font-size: 0.95rem; }
 }
-/* app-scope オーバーライド（既存レイアウト維持） */
-.app-scope { max-width: 900px; padding: 0; }
+/* app-scope オーバーライド（棒グラフ用に幅を広く） */
+.app-scope { max-width: 1200px; padding: 0; }
 </style>
 </head>
 <body>

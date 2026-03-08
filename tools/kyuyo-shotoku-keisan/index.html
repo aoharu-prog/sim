@@ -19,12 +19,12 @@
     color: var(--text-main);
     min-height: 100vh;
     padding: 20px 16px 48px;
-    max-width: 560px;
     margin: 0 auto;
   }
   @media (min-width: 640px) { body { padding: 36px 24px 60px; } }
+  /* app-scope オーバーライド */
+  .app-scope { max-width: 900px; }
   @media (min-width: 800px) {
-    body { max-width: 900px; }
     .ds-page-cols {
       display: grid;
       grid-template-columns: 340px 1fr;

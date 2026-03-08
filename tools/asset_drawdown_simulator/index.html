@@ -20,10 +20,12 @@
       color: var(--text-main);
       min-height: 100vh;
       padding: 20px 16px 48px;
-      max-width: 1280px;
       margin: 0 auto;
     }
     @media (min-width: 640px) { body { padding: 36px 24px 60px; } }
+
+    /* app-scope オーバーライド（棒グラフ・表用に幅を広く） */
+    .app-scope { max-width: 1280px; }
 
     /* --- layout（ds-page-cols オーバーライド） --- */
     @media (min-width: 800px) {
@@ -874,14 +876,17 @@
     `;
     // ↑ [変更4] style="color:var(--text)" → style="color:var(--text-main)"
 
-    drawChart(years, p);
+    drawChart(years, p, { animate: true });
   }
 
-  function drawChart(years, p){
+  let chartAnimId = null;
+  const CHART_ANIM_MS = 800;
+
+  /** グラフを progress (0〜1) まで描画。progress=1 で全データ表示 */
+  function drawChartFrame(years, p, progress){
     const canvas = $('chart');
     const ctx = canvas.getContext('2d');
 
-    // Fit to device pixels
     const dpr = Math.max(1, window.devicePixelRatio || 1);
     const cssW = canvas.clientWidth;
     const cssH = canvas.clientHeight;
@@ -907,12 +912,13 @@
     const x = (i)=> pad.l + (i/(years.length-1||1))*plotW;
     const y = (v)=> pad.t + (1 - (v-minY)/(maxY-minY))*plotH;
 
+    const maxIdx = progress >= 1 ? years.length - 1 : Math.max(0, Math.floor(progress * (years.length - 1)));
+
     // Grid
     ctx.save();
     ctx.globalAlpha = 0.35;
     ctx.strokeStyle = 'rgba(74,140,111,.2)';
     ctx.lineWidth = 1;
-
     const gridN = 5;
     for (let g=0; g<=gridN; g++){
       const yy = pad.t + (g/gridN)*plotH;
@@ -920,7 +926,6 @@
       ctx.moveTo(pad.l, yy);
       ctx.lineTo(W - pad.r, yy);
       ctx.stroke();
-
       const val = maxY * (1 - g/gridN);
       ctx.fillStyle = 'rgba(74,140,111,.8)';
       ctx.font = '11px ' + getComputedStyle(document.body).fontFamily;
@@ -942,7 +947,7 @@
     }
     ctx.restore();
 
-    // Retirement marker
+    // Retirement marker（常に表示）
     const retireIdx = clamp(p.retireAge - p.startAge, 0, years.length-1);
     ctx.save();
     ctx.strokeStyle = 'rgba(224,122,58,.65)';
@@ -960,31 +965,31 @@
     ctx.fillText('取り崩し開始', x(retireIdx)+6, pad.t + 14);
     ctx.restore();
 
-    // Series helper
-    function drawLine(arr, stroke){
+    function drawLine(arr, stroke, toIdx){
+      const n = (toIdx !== undefined ? toIdx : arr.length - 1) + 1;
       ctx.save();
       ctx.strokeStyle = stroke;
       ctx.lineWidth = 2;
       ctx.beginPath();
-      arr.forEach((v,i)=>{
-        const xx = x(i), yy = y(v);
+      for (let i=0; i<n; i++){
+        const xx = x(i), yy = y(arr[i]);
         if (i===0) ctx.moveTo(xx,yy);
         else ctx.lineTo(xx,yy);
-      });
+      }
       ctx.stroke();
       ctx.restore();
     }
 
-    // Fill under nominal for depth
+    // Fill under nominal（maxIdx まで）
     ctx.save();
     ctx.fillStyle = 'rgba(122,168,232,.12)';
     ctx.beginPath();
-    years.forEach((d,i)=>{
-      const xx = x(i), yy = y(d.end);
+    for (let i=0; i<=maxIdx; i++){
+      const xx = x(i), yy = y(years[i].end);
       if (i===0) ctx.moveTo(xx, yy);
       else ctx.lineTo(xx, yy);
-    });
-    ctx.lineTo(x(years.length-1), pad.t + plotH);
+    }
+    ctx.lineTo(x(maxIdx), pad.t + plotH);
     ctx.lineTo(x(0), pad.t + plotH);
     ctx.closePath();
     ctx.fill();
@@ -994,44 +999,86 @@
     const colNom = style.getPropertyValue('--data-blue-2').trim() || '#7aa8e8';
     const colReal = style.getPropertyValue('--accent-deep').trim() || '#4a8c6f';
     const colWithdraw = style.getPropertyValue('--data-orange').trim() || '#e07a3a';
-    drawLine(nom, colNom);
-    drawLine(real, colReal);
+    drawLine(nom, colNom, maxIdx);
+    drawLine(real, colReal, maxIdx);
 
-    // Withdrawal as thin line (real)
     ctx.save();
     ctx.strokeStyle = colWithdraw;
     ctx.lineWidth = 1.6;
     ctx.globalAlpha = 0.9;
     ctx.beginPath();
-    wReal.forEach((v,i)=>{
-      const xx = x(i), yy = y(v);
+    for (let i=0; i<=maxIdx; i++){
+      const xx = x(i), yy = y(wReal[i]);
       if (i===0) ctx.moveTo(xx,yy);
       else ctx.lineTo(xx,yy);
-    });
+    }
     ctx.stroke();
     ctx.restore();
 
-    // Tooltip on hover
+    return { pad, plotW, plotH, x, y, colNom, colReal, colWithdraw };
+  }
+
+  function drawChart(years, p, options){
+    const canvas = $('chart');
+    const opts = options || {};
+    const animate = opts.animate === true;
+
+    if (animate) {
+      if (chartAnimId) cancelAnimationFrame(chartAnimId);
+      const t0 = performance.now();
+      function tick(now) {
+        const elapsed = now - t0;
+        const progress = Math.min(1, elapsed / CHART_ANIM_MS);
+        const ease = 1 - Math.pow(1 - progress, 2);
+        drawChartFrame(years, p, ease);
+        if (progress < 1) {
+          chartAnimId = requestAnimationFrame(tick);
+        } else {
+          chartAnimId = null;
+          setupChartTooltip(years, p);
+        }
+      }
+      chartAnimId = requestAnimationFrame(tick);
+    } else {
+      drawChartFrame(years, p, 1);
+      setupChartTooltip(years, p);
+    }
+  }
+
+  function setupChartTooltip(years, p){
+    const canvas = $('chart');
+    const ctx = canvas.getContext('2d');
+    const pad = {l:52, r:16, t:16, b:34};
+    const plotW = canvas.clientWidth - pad.l - pad.r;
+    const style = getComputedStyle(document.documentElement);
+    const colNom = style.getPropertyValue('--data-blue-2').trim() || '#7aa8e8';
+    const colReal = style.getPropertyValue('--accent-deep').trim() || '#4a8c6f';
+    const colWithdraw = style.getPropertyValue('--data-orange').trim() || '#e07a3a';
+    const x = (i)=> pad.l + (i/(years.length-1||1))*plotW;
+    const y = (v)=> {
+      const maxY = Math.max(1, ...years.map(d=>d.end), ...years.map(d=>d.realEnd), ...years.map(d=>d.realWithdraw*3));
+      return pad.t + (1 - v/maxY)*(canvas.clientHeight - pad.t - pad.b);
+    };
+
     canvas.onmousemove = (ev) => {
       const rect = canvas.getBoundingClientRect();
       const mx = ev.clientX - rect.left;
       const idx = Math.round(((mx - pad.l) / plotW) * (years.length-1));
       const i = clamp(idx, 0, years.length-1);
-      drawChart(years, p); // redraw
+      drawChartFrame(years, p, 1);
 
       const d = years[i];
       const xx = x(i);
+      const W = canvas.clientWidth, H = canvas.clientHeight;
 
       ctx.save();
-      // vertical line
       ctx.strokeStyle = 'rgba(74,140,111,.2)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(xx, pad.t);
-      ctx.lineTo(xx, pad.t + plotH);
+      ctx.lineTo(xx, pad.t + H - pad.t - pad.b);
       ctx.stroke();
 
-      // points
       const pts = [
         {v:d.end, c:colNom},
         {v:d.realEnd, c:colReal},
@@ -1044,7 +1091,6 @@
         ctx.fill();
       });
 
-      // tooltip box
       const lines = [
         `年齢: ${d.age}`,
         `名目残高: ¥${yen(d.end)}`,
@@ -1070,13 +1116,12 @@
       lines.forEach((t, k)=>{
         ctx.fillText(t, bx + 10, by + 10 + k*16);
       });
-
       ctx.restore();
     };
 
     canvas.onmouseleave = () => {
       canvas.onmousemove = null;
-      drawChart(years, p);
+      drawChartFrame(years, p, 1);
     };
   }
 

@@ -22,7 +22,6 @@ body {
   color: var(--text-main);
   min-height: 100vh;
   padding: 20px 16px 48px;
-  max-width: 900px;
   margin: 0 auto;
 }
 @media (min-width: 640px) { body { padding: 36px 24px 60px; } }
@@ -202,8 +201,6 @@ body {
    align-items: start で sticky が正しく動作
 ══════════════════════════════════════════ */
 @media (min-width: 800px) {
-  body { max-width: 1020px; }
-
   /* 入力カラムをスティッキーに（カラムに付けると上揃えが崩れない） */
   .app-scope .ds-input-col { position: sticky; top: 72px; }
   .app-scope .ds-input-col .ds-card { margin-bottom: 0; }
