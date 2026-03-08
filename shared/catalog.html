@@ -6,6 +6,7 @@
 <title>Mint Design System — カタログ</title>
 <link rel="stylesheet" href="./components.css">
 <script src="./base.js"></script>
+<script src="./chart-asset-line.js"></script>
 <style>
 /* ══════════════════════════════════════════
    CATALOG — レイアウト専用スタイル
@@ -198,6 +199,7 @@ body {
   <a class="cat-nav-link" href="#donut-summary">ds-donut-summary</a>
   <a class="cat-nav-link" href="#breakdown-accordion">ds-breakdown-accordion</a>
   <a class="cat-nav-link" href="#resident-savings">ds-resident-savings</a>
+  <a class="cat-nav-link" href="#asset-line-chart">ds-asset-line-chart</a>
   <a class="cat-nav-link" href="#calc-basis">ds-calc-basis</a>
 
   <div class="cat-nav-group">注釈・フィードバック</div>
@@ -769,6 +771,25 @@ body {
     </div>
   </section>
 
+  <!-- ds-asset-line-chart -->
+  <section class="cat-section" id="asset-line-chart">
+    <div class="cat-section-header">
+      <h2 class="cat-section-title">ds-asset-line-chart</h2>
+      <span class="cat-section-tag">.canvasWrap / chart-asset-line.js</span>
+    </div>
+    <p class="cat-desc">名目残高・実質残高・取り崩し額の3本線グラフ。ホバーでツールチップ表示。資産取り崩しシミュレーター等で使用。左から右へ描画するアニメーション付き。</p>
+    <div class="preview col" style="max-width:640px;">
+      <div class="canvasWrap" style="padding:12px 0;">
+        <canvas id="cat-chart-demo" width="600" height="280" aria-label="資産推移デモ" style="width:100%;height:280px;background:var(--mint-pale);border:1px solid var(--sys-border);border-radius:14px;display:block;"></canvas>
+        <div class="legend" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;color:var(--sub-text);font-size:12px;">
+          <span><span class="dot" style="width:10px;height:10px;border-radius:999px;display:inline-block;margin-right:6px;background:var(--data-blue-2);border:1px solid var(--mint-light)"></span>名目残高</span>
+          <span><span class="dot" style="width:10px;height:10px;border-radius:999px;display:inline-block;margin-right:6px;background:var(--accent-deep);border:1px solid var(--mint-light)"></span>実質残高</span>
+          <span><span class="dot" style="width:10px;height:10px;border-radius:999px;display:inline-block;margin-right:6px;background:var(--data-orange);border:1px solid var(--mint-light)"></span>取り崩し（実質）</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ds-calc-basis -->
   <section class="cat-section" id="calc-basis">
     <div class="cat-section-header">
@@ -1162,6 +1183,25 @@ document.getElementById('confettiBtn').addEventListener('click', () => {
   fireConfetti(parseInt(document.getElementById('confettiCount').value) || 60);
 });
 document.getElementById('confettiBig').addEventListener('click', () => fireConfetti(150));
+
+// ── ds-asset-line-chart デモ ──
+(function initAssetChartDemo() {
+  const canvas = document.getElementById('cat-chart-demo');
+  if (!canvas || typeof drawAssetLineChart !== 'function') return;
+  const demoYears = [];
+  for (let age = 35; age <= 85; age++) {
+    const t = (age - 35) / 50;
+    const nom = 5000000 * (1 + 6*t);
+    const real = 3000000 * (1 + 5*t);
+    demoYears.push({
+      age,
+      end: Math.max(100000, nom),
+      realEnd: Math.max(100000, real),
+      realWithdraw: age >= 60 ? 2400000 : 0,
+    });
+  }
+  drawAssetLineChart(canvas, demoYears, { startAge: 35, retireAge: 60, animate: true });
+})();
 
 // ── サイドバーアクティブリンク（IntersectionObserver） ──
 const _sections  = document.querySelectorAll('.cat-section[id]');
