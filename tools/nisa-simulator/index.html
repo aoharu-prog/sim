@@ -237,32 +237,27 @@ canvas { display: block; cursor: default; }
 .ds-card:nth-child(3) { animation-delay: 0.14s; }
 
 /* ══════════════════════════════════════════
-   2カラムページレイアウト（PC）
+   2カラムページレイアウト（ds-page-cols オーバーライド）
 ══════════════════════════════════════════ */
 @media (min-width: 800px) {
   body { max-width: 1120px; }
 
-  .page-cols {
-    display: grid;
+  .app-scope .ds-page-cols {
     grid-template-columns: 380px 1fr;
     gap: 24px;
-    align-items: stretch;
   }
-  /* 入力カード：左列の高さに合わせて伸ばし、スティッキー */
-  .input-col { display: flex; flex-direction: column; }
-  .input-col .ds-card { flex: 1; position: sticky; top: 24px; margin-bottom: 0; }
-  /* 結果カード：高さ100%で右列を埋める */
-  .result-col { display: flex; flex-direction: column; }
-  .result-col .ds-card { flex: 1; margin-bottom: 0; min-height: 0; }
+  /* 入力カラムをスティッキーに */
+  .app-scope .ds-input-col { position: sticky; top: 72px; }
+  .app-scope .ds-input-col .ds-card { margin-bottom: 0; }
 
   /* 入力フォームを縦積みレイアウト（ラベル上・入力下）に */
-  .page-cols .ds-form-row { grid-template-columns: 1fr; }
-  .page-cols .ds-form-row-label { margin-bottom: 6px; }
+  .app-scope .ds-page-cols .ds-form-row { grid-template-columns: 1fr; }
+  .app-scope .ds-page-cols .ds-form-row-label { margin-bottom: 6px; }
 
   /* 数値入力・ボタンをコンパクトに */
-  .page-cols .ds-num-edit { font-size: 1.7rem; }
-  .page-cols .ds-select-underline { font-size: 1.6rem; }
-  .page-cols .ds-pm-btn { width: 26px; height: 26px; font-size: 0.95rem; }
+  .app-scope .ds-page-cols .ds-num-edit { font-size: 1.7rem; }
+  .app-scope .ds-page-cols .ds-select-underline { font-size: 1.6rem; }
+  .app-scope .ds-page-cols .ds-pm-btn { width: 26px; height: 26px; font-size: 0.95rem; }
 }
 /* app-scope オーバーライド（既存レイアウト維持） */
 .app-scope { max-width: 900px; padding: 0; }
@@ -276,8 +271,8 @@ canvas { display: block; cursor: default; }
   <p>新NISA総枠 1,800万円を考慮した長期運用シミュレーション</p>
 </header>
 
-<div class="page-cols">
-<div class="input-col">
+<div class="ds-page-cols">
+<div class="ds-input-col">
 <!-- ── 入力カード ── -->
 <div class="ds-card">
   <div class="card-label">入力条件</div>
@@ -415,9 +410,9 @@ canvas { display: block; cursor: default; }
     </div><!-- /optional-section -->
   </div>
 </div>
-</div><!-- /input-col -->
+</div><!-- /ds-input-col -->
 
-<div class="result-col">
+<div class="ds-result-col">
 <!-- ── 結果カード ── -->
 <div class="ds-card" id="resultCard">
   <div class="card-label">シミュレーション結果</div>
@@ -431,8 +426,8 @@ canvas { display: block; cursor: default; }
   </div>
   <div class="ds-chart-note">※ 新NISA枠（1,800万円）到達後は<br class="note-br">新規積立停止・運用のみ継続</div>
 </div>
-</div><!-- /result-col -->
-</div><!-- /page-cols -->
+</div><!-- /ds-result-col -->
+</div><!-- /ds-page-cols -->
 
 <div class="disclaimer">
   <p>【免責事項】本シミュレーターは、一定の前提条件のもとで試算した参考値であり、将来の運用成果を保証するものではありません。実際の投資においては、元本割れのリスクを含む様々なリスクが存在します。</p>

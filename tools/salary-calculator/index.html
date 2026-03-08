@@ -134,20 +134,20 @@ body {
 .chart-note { font-size: clamp(0.58rem, 1.7vw, 0.63rem); color: var(--sub-text); line-height: 1.8; }
 
 /* 結果カラム：条件設定と同じカード背景・カード間余白14px・全幅 */
-.result-col {
+.ds-result-col {
   display: flex;
   flex-direction: column;
   gap: 0;
 }
-.result-col > .ds-hero-result,
-.result-col > .ds-summary-grid,
-.result-col > .ds-breakdown-block,
-.result-col > .ds-resident-savings,
-.result-col > .ds-donut-summary {
+.ds-result-col > .ds-hero-result,
+.ds-result-col > .ds-summary-grid,
+.ds-result-col > .ds-breakdown-block,
+.ds-result-col > .ds-resident-savings,
+.ds-result-col > .ds-donut-summary {
   margin-top: 14px;
 }
-.result-col > .ds-hero-result { margin-top: 0; }
-.result-col {
+.ds-result-col > .ds-hero-result { margin-top: 0; }
+.ds-result-col {
   background: var(--card-bg);
   border-radius: 28px;
   padding: 24px var(--card-px) 28px;
@@ -155,7 +155,7 @@ body {
   position: relative;
   overflow: hidden;
 }
-.result-col::before {
+.ds-result-col::before {
   content: '';
   position: absolute;
   top: 0;
@@ -167,59 +167,49 @@ body {
   animation: shimmerBar 3s linear infinite;
   border-radius: 28px 28px 0 0;
 }
-.result-col .ds-hero-result {
+.ds-result-col .ds-hero-result {
   text-align: center;
 }
-.result-col .ds-hero-result .hero-amount {
+.ds-result-col .ds-hero-result .hero-amount {
   justify-content: center;
 }
-.result-col .ds-hero-result,
-.result-col .ds-summary-grid,
-.result-col .ds-breakdown-block,
-.result-col .ds-donut-summary {
+.ds-result-col .ds-hero-result,
+.ds-result-col .ds-summary-grid,
+.ds-result-col .ds-breakdown-block,
+.ds-result-col .ds-donut-summary {
   margin-bottom: 0;
 }
 /* 月間手取り（目安）の項目名フォントサイズを月間総支給（額面）と同じに */
-.result-col .ds-hero-result .hero-eyebrow {
+.ds-result-col .ds-hero-result .hero-eyebrow {
   font-size: clamp(0.72rem, 2.2vw, 0.85rem);
 }
-.result-col .ds-summary-grid {
+.ds-result-col .ds-summary-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
 }
 /* モバイルでも月間総支給・手取り年収を1行2カラムに（last-childの全幅を解除） */
 @media (max-width: 479px) {
-  .result-col .ds-summary-grid .ds-stat-card:last-child { grid-column: auto; }
+  .ds-result-col .ds-summary-grid .ds-stat-card:last-child { grid-column: auto; }
 }
-.result-col .ds-breakdown-block,
-.result-col .ds-donut-summary {
+.ds-result-col .ds-breakdown-block,
+.ds-result-col .ds-donut-summary {
   width: 100%;
 }
 
 /* ══════════════════════════════════════════
-   2カラムページレイアウト（PC）
-   align-items: stretch で左右の高さを揃える
+   2カラムページレイアウト（ds-page-cols オーバーライド）
+   align-items: start で sticky が正しく動作
 ══════════════════════════════════════════ */
 @media (min-width: 800px) {
   body { max-width: 1020px; }
 
-  .page-cols {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 20px;
-    align-items: stretch;          /* 左右の高さを揃える */
-  }
-
-  /* 入力カードを左列の中でスティッキーに */
-  .input-col { position: relative; }
-  .input-col .ds-card {
-    position: sticky; top: 24px;
-    margin-bottom: 0;
-  }
+  /* 入力カラムをスティッキーに（カラムに付けると上揃えが崩れない） */
+  .app-scope .ds-input-col { position: sticky; top: 72px; }
+  .app-scope .ds-input-col .ds-card { margin-bottom: 0; }
 
   /* 左列の数値入力をコンパクトに */
-  .input-col .num-input { font-size: 1.6rem; }
+  .app-scope .ds-input-col .num-input { font-size: 1.6rem; }
 }
 
 /* ── 免責 ── */
@@ -243,10 +233,10 @@ body {
   <p>社会保険料・所得税・住民税を考慮した実質手取りを試算します</p>
 </header>
 
-<div class="page-cols">
+<div class="ds-page-cols">
 
   <!-- ── 入力カード ── -->
-  <div class="input-col">
+  <div class="ds-input-col">
   <div class="ds-card">
     <div class="card-label">条件設定</div>
     <div class="input-list">
@@ -332,10 +322,10 @@ body {
 
     </div>
   </div>
-  </div><!-- /input-col -->
+  </div><!-- /ds-input-col -->
 
   <!-- ── 結果カード ── -->
-  <div class="result-col">
+  <div class="ds-result-col">
     <div class="card-label">シミュレーション結果</div>
 
     <!-- ① ヒーロー：推定月間手取り -->
@@ -523,9 +513,9 @@ body {
       <p>※ 協会けんぽ（東京）令和5年度料率基準　※ 住民税は課税所得の約10%で簡易計算　※ 所得税は復興特別税を含む簡易計算</p>
     </div>
 
-  </div><!-- /result-col -->
+  </div><!-- /ds-result-col -->
 
-</div><!-- /page-cols -->
+</div><!-- /ds-page-cols -->
 
 <div class="disclaimer">
   <p>本シミュレーターは参考値の試算です。実際の保険料・税額は標準報酬月額の等級・加入する健康保険組合・自治体等によって異なります。税務・社会保険の詳細はご自身でご確認ください。</p>
